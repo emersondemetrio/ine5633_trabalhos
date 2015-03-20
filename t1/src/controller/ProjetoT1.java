@@ -6,6 +6,6 @@ public class ProjetoT1 {
 		Heuristic h = new Heuristic();
 		
 		Puzzle game = new Puzzle(3);
-		game.iniciar();
+		//game.iniciar();
 	}
 }

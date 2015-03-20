@@ -13,21 +13,4 @@ public class Puzzle {
 		new PuzzleGui("8 Puzzle Game", tab);
 	}
 
-	public void iniciar() {
-
-	}
 }
-
-/*
- * public void showStatus(Tabuleiro tab) { Item[][] local = tab.getTabuleiro();
- * String output = "";
- * 
- * for (int i = 0; i < local.length; i++) {
- * 
- * for (int j = 0; j < local.length; j++) { output += " [" +
- * local[i][j].getValor() + "] "; }
- * 
- * output += "\n"; }
- * 
- * System.out.println("\n  ---TABLE---\n" + output); }
- */

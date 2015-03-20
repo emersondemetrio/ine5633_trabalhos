@@ -1,16 +1,12 @@
 package view;
 
 import javax.swing.*;
-
 import model.Tabuleiro;
-
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
 public class PuzzleGui {
-
+	protected boolean inTest = true;
 	protected JTextField[] entradas;
 	protected JFrame janelaPrincipal;
 	protected Tabuleiro tabuleiro;
@@ -23,12 +19,12 @@ public class PuzzleGui {
 		panel.add(new JLabel(""));
 
 		this.entradas = new JTextField[9];
-
+		int[] aleatorio = new int[] { 8, 7, 6, 5, 4, 3, 2, 1, 0 };
 		for (int i = 0; i < entradas.length; i++) {
 
 			entradas[i] = new JTextField();
 			entradas[i].setSize(30, 20);
-			entradas[i].setText(Integer.toString(i));
+			entradas[i].setText(Integer.toString(aleatorio[i]));
 			panel.add(entradas[i]);
 		}
 
@@ -91,10 +87,13 @@ public class PuzzleGui {
 						System.arraycopy(arrayTemporario, (i * 3), inicial[i],
 								0, 3);
 					}
-
-					janelaPrincipal.setVisible(false);
+					
 					tabuleiro.setEstadoInicial(inicial);
 					showStatus(inicial);
+					
+					if( !inTest){
+						janelaPrincipal.setVisible(false);
+					}
 				}
 			}
 		});
@@ -112,6 +111,10 @@ public class PuzzleGui {
 	}
 
 	public void msg(String s) {
-		JOptionPane.showMessageDialog(janelaPrincipal, s);
+		if (inTest) {
+			System.out.println(s + "\n");
+		} else {
+			JOptionPane.showMessageDialog(janelaPrincipal, s);
+		}
 	}
 }
