@@ -1,4 +1,4 @@
-package t1;
+package controller;
 
 public class ProjetoT1 {
 
@@ -6,6 +6,6 @@ public class ProjetoT1 {
 		Heuristic h = new Heuristic();
 		
 		Puzzle game = new Puzzle(3);
-		game.viewTable();
+		game.iniciar();
 	}
 }
