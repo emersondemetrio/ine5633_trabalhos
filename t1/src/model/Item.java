@@ -40,7 +40,6 @@ public class Item {
 			case 5:
 				objetivo = new int[] { 1, 2 };
 				break;
-
 			case 6:
 				objetivo = new int[] { 2, 0 };
 				break;
@@ -55,7 +54,7 @@ public class Item {
 				objetivo = error;
 				break;
 			}
-			
+
 			return objetivo;
 		}
 	}

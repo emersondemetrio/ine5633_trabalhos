@@ -42,9 +42,7 @@ public class Tabuleiro {
 		int[] posObjetivo = item.getPosicalObjetivo();
 		int[] posAtual = item.getPosicaoAtual();
 
-		int somaObjetivo = posObjetivo[0] + posObjetivo[1];
-		int somaAtual = posAtual[0] + posAtual[1];
-		int numeroPassosAteObjetivo = Math.abs((somaObjetivo) - (somaAtual));
+		int numeroPassosAteObjetivo = Math.abs((posObjetivo[0]) - (posAtual[0])) + Math.abs((posObjetivo[1]) - (posAtual[1]));
 
 		memoriaLocal.put(item.getValor(), numeroPassosAteObjetivo);
 		log("OBS: Calculo errado! " + item.getValor() + " Passos: " + numeroPassosAteObjetivo);
