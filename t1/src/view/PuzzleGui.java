@@ -46,7 +46,7 @@ public class PuzzleGui {
 		janelaPrincipal.pack();
 		janelaPrincipal.setVisible(true);
 
-		msg("Observação: Para iniciar o programa, você deve inserir valores de 0 a 8 sem repetição.");
+		msg("Observaï¿½ï¿½o: Para iniciar o programa, vocï¿½ deve inserir valores de 0 a 8 sem repetiï¿½ï¿½o.");
 
 		botaoIniciar.addActionListener(new ActionListener() {
 
@@ -80,7 +80,7 @@ public class PuzzleGui {
 				}
 
 				if (estadoValido > 1) {
-					msg("Impossível inicar estado! Existem valores fora do intervalo estabelecido. [ 0 - 8 ] ou não são números!");
+					msg("Impossï¿½vel inicar estado! Existem valores fora do intervalo estabelecido. [ 0 - 8 ] ou nï¿½o sï¿½o nï¿½meros!");
 				} else {
 
 					for (int i = 0; i < 3; i++) {

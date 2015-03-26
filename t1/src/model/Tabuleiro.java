@@ -30,6 +30,7 @@ public class Tabuleiro {
 
 	protected int calcularDistanciaItemOrigem(int item, int linha, int coluna) {
 
+
 		int[] posObjetivo = this.getPosicalObjetivo(item);
 
 		int numeroPassosAteObjetivo = Math.abs((posObjetivo[0]) - (linha))
@@ -96,7 +97,7 @@ public class Tabuleiro {
 		// achar a posicao[linha, coluna] do espaco vazio (valor = 0)
 		int[] posicaoVazio = this.encontraPosicao(this.tabuleiro, 0);
 
-		// se posicaoVazio not linha zero então move
+		// se posicaoVazio not linha zero entï¿½o move
 		if (verificaSeMovimentoDoVazioEhValido(Movimentos.CIMA, posicaoVazio)) {
 			// cria novo tabuleiro
 			novoTab = new Tabuleiro();
@@ -112,7 +113,7 @@ public class Tabuleiro {
 		return novoTab;
 	}
 
-	public Tabuleiro moveVazioParaBaixo() {
+	public Tabuleiro moveVazioParaBaixo(Tabuleiro tabuleiro) {
 		Tabuleiro novoTab = null;
 
 		int[] posicaoVazio = this.encontraPosicao(novoTab.tabuleiro, 0);
@@ -127,10 +128,18 @@ public class Tabuleiro {
 		return novoTab;
 	}
 
+	public Tabuleiro moveVazioParaEsquerda(Tabuleiro tabuleiro) {
+		return null;
+	}
+
+	public Tabuleiro moveVazioParaDireita(Tabuleiro tabuleiro){
+		return null;
+	}
+
 	private void trocaPecas(int[] posicaoVazio, int valorAcimaDoVazio) {
 
 		this.tabuleiro[posicaoVazio[0]][posicaoVazio[1]] = valorAcimaDoVazio;
-		// move o espaço vazio para cima
+		// move o espaï¿½o vazio para cima
 		this.tabuleiro[posicaoVazio[0] + 1][posicaoVazio[1]] = 0;
 	}
 
@@ -149,9 +158,11 @@ public class Tabuleiro {
 
 		default:
 			return false;
+
 		}
 
 	}
+
 
 	public int[] encontraPosicao(int[][] tabuleiro, int valor) {
 
@@ -164,4 +175,5 @@ public class Tabuleiro {
 		}
 		return new int[] { -1, -1 };
 	}
+
 }
