@@ -1,8 +1,7 @@
 package controller;
 
-import view.PuzzleGui;
-import model.Item;
 import model.Tabuleiro;
+import view.PuzzleGui;
 
 public class Puzzle {
 

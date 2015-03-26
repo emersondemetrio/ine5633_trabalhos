@@ -1,60 +1,41 @@
 package model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 public class Tabuleiro {
 
-	protected Item[][] tabuleiro;
-	protected Fronteiras memoria;
-	protected Map<Integer, Integer> memoriaLocal = new HashMap<Integer, Integer>();
+	protected int[][] tabuleiro;
+	protected int valorHeuristicaTabuleiro;
 
-	public Item[][] getTabuleiro() {
+	public int[][] getTabuleiro() {
 		return this.tabuleiro;
 	}
 
 	public void setEstadoInicial(int[][] estadoInicial) {
-		this.tabuleiro = new Item[estadoInicial.length][estadoInicial[0].length];
+		this.tabuleiro = estadoInicial;
 
-		for (int i = 0; i < estadoInicial.length; i++) {
-			for (int j = 0; j < estadoInicial[0].length; j++) {
-				Item temp = new Item(new int[] { i, j }, estadoInicial[i][j]);
-				this.tabuleiro[i][j] = temp;
-			}
-		}
-
-		calulcarDistancias();
+		calcularHeuristicaTabuleiro();
 	}
 
-	public void calulcarDistancias() {
+	public int calcularHeuristicaTabuleiro() {
+
+		int valorHeuristica = 0;
 		for (int i = 0; i < tabuleiro.length; i++) {
 			for (int j = 0; j < tabuleiro[0].length; j++) {
-				this.calcularDistanciaItemOrigem(tabuleiro[i][j]);
+				valorHeuristica += this.calcularDistanciaItemOrigem(
+						tabuleiro[i][j], i, j);
 			}
 		}
 
-		showMemory();
+		return valorHeuristica;
 	}
 
-	protected void calcularDistanciaItemOrigem(Item item) {
+	protected int calcularDistanciaItemOrigem(int item, int linha, int coluna) {
 
-		int[] posObjetivo = item.getPosicalObjetivo();
-		int[] posAtual = item.getPosicaoAtual();
+		int[] posObjetivo = this.getPosicalObjetivo(item);
 
-		int numeroPassosAteObjetivo = Math.abs((posObjetivo[0]) - (posAtual[0])) + Math.abs((posObjetivo[1]) - (posAtual[1]));
+		int numeroPassosAteObjetivo = Math.abs((posObjetivo[0]) - (linha))
+				+ Math.abs((posObjetivo[1]) - (coluna));
 
-		memoriaLocal.put(item.getValor(), numeroPassosAteObjetivo);
-		log("OBS: Calculo errado! " + item.getValor() + " Passos: " + numeroPassosAteObjetivo);
-
-	}
-
-	public void showMemory() {
-		System.out.println("\n");
-		Set<Integer> keys = memoriaLocal.keySet();
-		for (Integer i : keys) {
-			log(i + " [ " + memoriaLocal.get(i) + " ]");
-		}
+		return numeroPassosAteObjetivo;
 	}
 
 	public int[][] getEstadoObjetivo() {
@@ -64,5 +45,123 @@ public class Tabuleiro {
 
 	public static void log(String s) {
 		System.out.println(s);
+	}
+
+	public int[] getPosicalObjetivo(int valor) {
+		int[] error = new int[] { -1, -1 };
+
+		int[] objetivo;
+		switch (valor) {
+		case 0:
+			objetivo = new int[] { 0, 0 };
+			break;
+		case 1:
+			objetivo = new int[] { 0, 1 };
+			break;
+		case 2:
+			objetivo = new int[] { 0, 2 };
+			break;
+
+		case 3:
+			objetivo = new int[] { 1, 0 };
+			break;
+		case 4:
+			objetivo = new int[] { 1, 1 };
+			break;
+		case 5:
+			objetivo = new int[] { 1, 2 };
+			break;
+		case 6:
+			objetivo = new int[] { 2, 0 };
+			break;
+		case 7:
+			objetivo = new int[] { 2, 1 };
+			break;
+		case 8:
+			objetivo = new int[] { 2, 2 };
+			break;
+
+		default:
+			objetivo = error;
+			break;
+		}
+
+		return objetivo;
+
+	}
+
+	public Tabuleiro moveVazioParaCima(Tabuleiro tabuleiro) {
+		Tabuleiro novoTab = null;
+
+		// achar a posicao[linha, coluna] do espaco vazio (valor = 0)
+		int[] posicaoVazio = this.encontraPosicao(this.tabuleiro, 0);
+
+		// se posicaoVazio not linha zero então move
+		if (verificaSeMovimentoDoVazioEhValido(Movimentos.CIMA, posicaoVazio)) {
+			// cria novo tabuleiro
+			novoTab = new Tabuleiro();
+			novoTab.setEstadoInicial(this.getTabuleiro());
+			// guarda valor acima do vazio
+			int valorAcimaDoVazio = novoTab.getTabuleiro()[posicaoVazio[0] + 1][posicaoVazio[1]];
+			// colocar o valor acima dentro da posicao vazia
+			novoTab.trocaPecas(posicaoVazio, valorAcimaDoVazio);
+
+		}
+		// senhao retorna tabuleiro invalido
+
+		return novoTab;
+	}
+
+	public Tabuleiro moveVazioParaBaixo() {
+		Tabuleiro novoTab = null;
+
+		int[] posicaoVazio = this.encontraPosicao(novoTab.tabuleiro, 0);
+
+		if (verificaSeMovimentoDoVazioEhValido(Movimentos.BAIXO, posicaoVazio)) {
+			novoTab = new Tabuleiro();
+			novoTab.setEstadoInicial(this.getTabuleiro());
+			int valorAbaixoDoVazio = novoTab.getTabuleiro()[posicaoVazio[0] - 1][posicaoVazio[1]];
+			novoTab.trocaPecas(posicaoVazio, valorAbaixoDoVazio);
+		}
+
+		return novoTab;
+	}
+
+	private void trocaPecas(int[] posicaoVazio, int valorAcimaDoVazio) {
+
+		this.tabuleiro[posicaoVazio[0]][posicaoVazio[1]] = valorAcimaDoVazio;
+		// move o espaço vazio para cima
+		this.tabuleiro[posicaoVazio[0] + 1][posicaoVazio[1]] = 0;
+	}
+
+	public boolean verificaSeMovimentoDoVazioEhValido(int movimento,
+			int[] posicaoVazio) {
+
+		switch (movimento) {
+		case Movimentos.CIMA:
+			return posicaoVazio[0] != 0;
+		case Movimentos.BAIXO:
+			return posicaoVazio[0] != 2;
+		case Movimentos.DIREITA:
+			return posicaoVazio[1] != 2;
+		case Movimentos.ESQUERDA:
+			return posicaoVazio[1] != 0;
+
+		default:
+			return false;
+		}
+
+	}
+
+	public int[] encontraPosicao(int[][] tabuleiro, int valor) {
+
+		for (int i = 0; i < tabuleiro.length; i++) {
+			for (int j = 0; j < tabuleiro[0].length; j++) {
+				if (tabuleiro[i][j] == valor) {
+					return new int[] { i, j };
+				}
+			}
+		}
+		return new int[] { -1, -1 };
 	}
 }
