@@ -1,9 +1,18 @@
 package view;
 
-import javax.swing.*;
-import model.Tabuleiro;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
+
+import model.Tabuleiro;
+import controller.Heuristic;
 
 public class PuzzleGui {
 	protected boolean inTest = true;
@@ -46,7 +55,7 @@ public class PuzzleGui {
 		janelaPrincipal.pack();
 		janelaPrincipal.setVisible(true);
 
-		msg("Observa��o: Para iniciar o programa, voc� deve inserir valores de 0 a 8 sem repeti��o.");
+		msg("Observacao Para iniciar o programa, voce deve inserir valores de 0 a 8 sem repeticao.");
 
 		botaoIniciar.addActionListener(new ActionListener() {
 
@@ -80,18 +89,20 @@ public class PuzzleGui {
 				}
 
 				if (estadoValido > 1) {
-					msg("Imposs�vel inicar estado! Existem valores fora do intervalo estabelecido. [ 0 - 8 ] ou n�o s�o n�meros!");
+					msg("Impossivel inicar estado! Existem valores fora do intervalo estabelecido. [ 0 - 8 ] ou nao numeros!");
 				} else {
 
 					for (int i = 0; i < 3; i++) {
 						System.arraycopy(arrayTemporario, (i * 3), inicial[i],
 								0, 3);
 					}
-					
+
 					tabuleiro.setEstadoInicial(inicial);
 					showStatus(inicial);
-					
-					if( !inTest){
+
+					new Heuristic().resolverRecursao(0, tabuleiro);
+
+					if (!inTest) {
 						janelaPrincipal.setVisible(false);
 					}
 				}

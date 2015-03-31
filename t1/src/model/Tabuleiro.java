@@ -1,5 +1,7 @@
 package model;
 
+import controller.Puzzle;
+
 public class Tabuleiro {
 
 	protected int[][] tabuleiro;
@@ -12,7 +14,7 @@ public class Tabuleiro {
 	public void setEstadoInicial(int[][] estadoInicial) {
 		this.tabuleiro = estadoInicial;
 
-		calcularHeuristicaTabuleiro();
+		Puzzle.showStatus("No tabuleiro quem eh o primeiro: ", this.tabuleiro);
 	}
 
 	public int calcularHeuristicaTabuleiro() {
@@ -38,12 +40,11 @@ public class Tabuleiro {
 		return numeroPassosAteObjetivo;
 	}
 
-	public int[][] getEstadoObjetivo() {
-		int[][] objetivo = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 0 } };
-		return objetivo;
+	public static int[][] getEstadoObjetivo() {
+		return new int[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 0 } };
 	}
 
-	public Tabuleiro moveVazioParaCima(Tabuleiro tabuleiro) {
+	public Tabuleiro moveVazioParaCima() {
 		Tabuleiro novoTab = null;
 
 		// achar a posicao[linha, coluna] do espaco vazio (valor = 0)
@@ -74,7 +75,7 @@ public class Tabuleiro {
 		return novoTab;
 	}
 
-	public Tabuleiro moveVazioParaBaixo(Tabuleiro tabuleiro) {
+	public Tabuleiro moveVazioParaBaixo() {
 		Tabuleiro novoTab = null;
 
 		int[] posicaoVazio = this.encontraPosicao(this.tabuleiro, 0);
@@ -91,7 +92,7 @@ public class Tabuleiro {
 		return novoTab;
 	}
 
-	public Tabuleiro moveVazioParaEsquerda(Tabuleiro tabuleiro) {
+	public Tabuleiro moveVazioParaEsquerda() {
 		Tabuleiro novoTab = null;
 
 		int[] posicaoVazio = this.encontraPosicao(this.tabuleiro, 0);
@@ -110,7 +111,7 @@ public class Tabuleiro {
 		return novoTab;
 	}
 
-	public Tabuleiro moveVazioParaDireita(Tabuleiro tabuleiro) {
+	public Tabuleiro moveVazioParaDireita() {
 		Tabuleiro novoTab = null;
 
 		int[] posicaoVazio = this.encontraPosicao(this.tabuleiro, 0);
@@ -125,7 +126,7 @@ public class Tabuleiro {
 			int coluna = posicaoVazio[1];
 
 			int valorADireitaDoVazio = novoTab.getTabuleiro()[linha][coluna + 1];
-			
+
 			novoTab.trocaPecas(Movimentos.DIREITA, posicaoVazio,
 					valorADireitaDoVazio);
 		}
@@ -133,8 +134,7 @@ public class Tabuleiro {
 		return novoTab;
 	}
 
-	private void trocaPecas(int direcao, int[] posicaoVazio,
-			int valorSubstituto) {
+	private void trocaPecas(int direcao, int[] posicaoVazio, int valorSubstituto) {
 		switch (direcao) {
 
 		case Movimentos.CIMA:
@@ -246,5 +246,21 @@ public class Tabuleiro {
 
 	static void debug(String s) {
 		System.out.println(s);
+	}
+
+	public static boolean compareTabuleiros(int[][] umTab, int[][] outroTab) {
+
+		for (int i = 0; i < umTab.length; i++) {
+			for (int j = 0; j < umTab[0].length; j++) {
+				int atualUmtab = umTab[i][j];
+				int atualOutroTab = outroTab[i][j];
+
+				if (atualUmtab != atualOutroTab) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }
