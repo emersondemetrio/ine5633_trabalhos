@@ -118,12 +118,14 @@ public class Heuristic {
 		//Puzzle.showStatus("Tab atual: ", tabAtual.getTabuleiro());
 
 		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(), Tabuleiro.getEstadoObjetivo())) {
+			Puzzle.showStatus("Nivel " + nivel, tabAtual.getTabuleiro());
 			System.out.println("Parabens, voce ganhou o jogo!");
+			Heuristic.showList("Caminho", fronteirasVisitadas);
 			return true;
 		} else {
 			contadordie++;
 			if (resolverRecursao(nivelLocal, tabAtual)) {
-				Puzzle.showStatus("Nivel " + nivel, tabAtual.getTabuleiro());
+				//Puzzle.showStatus("Nivel " + nivel, tabAtual.getTabuleiro());
 				return true;
 			} else {
 				return false;
@@ -144,7 +146,7 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
 				//				Puzzle.showStatus("Cima: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(nivel + heuristica, temp);
 			}
@@ -154,7 +156,7 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
 				//				Puzzle.showStatus("Esquerda: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(nivel + heuristica, temp);
 			}
@@ -164,7 +166,7 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
 				//				Puzzle.showStatus("Baixo: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(nivel + heuristica, temp);
 			}
@@ -174,7 +176,7 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
 				//				Puzzle.showStatus("Direita: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(nivel + heuristica, temp);
 			}
