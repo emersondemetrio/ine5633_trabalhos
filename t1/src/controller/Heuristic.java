@@ -115,18 +115,22 @@ public class Heuristic {
 		fronteirasExpandidas.remove(key);
 		fronteirasVisitadas.put(key, tabAtual);
 
-		Puzzle.showStatus("Tab atual: ", tabAtual.getTabuleiro());
+		//Puzzle.showStatus("Tab atual: ", tabAtual.getTabuleiro());
 
-		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(),
-				Tabuleiro.getEstadoObjetivo())) {
-
+		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(), Tabuleiro.getEstadoObjetivo())) {
+			System.out.println("Parabens, voce ganhou o jogo!");
 			return true;
 		} else {
 			contadordie++;
-			resolverRecursao(nivelLocal, tabAtual);
+			if (resolverRecursao(nivelLocal, tabAtual)) {
+				Puzzle.showStatus("Nivel " + nivel, tabAtual.getTabuleiro());
+				return true;
+			} else {
+				return false;
+			}
+
 		}
 
-		return false;
 	}
 
 	private void expandirFronteiras(int nivel, Tabuleiro estado) {

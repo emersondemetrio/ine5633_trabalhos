@@ -148,7 +148,6 @@ public class Tabuleiro {
 			return false;
 		}
 
-		System.out.println("Objeto igual encontrado na lista");
 		return true;
 	}
 
