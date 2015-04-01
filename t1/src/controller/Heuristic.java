@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -95,21 +96,21 @@ public class Heuristic {
 		//			System.exit(0);
 		//		}
 
+		if(nivel == 0){
+			fronteirasVisitadas.put(Integer.MAX_VALUE, estado);
+		}
+
 		int nivelLocal = nivel;
 		Tabuleiro tabAtual = null;
+
 		expandirFronteiras(nivel, estado);
 
+		//busca o menor na lista
 		Map.Entry<Integer, Tabuleiro> entry = fronteirasExpandidas.entrySet()
 				.iterator().next();
 		int key = entry.getKey();
-
-		System.out.println("Nivel atual: " + nivel + " custo: " + key);
-
 		nivelLocal++;
 		tabAtual = fronteirasExpandidas.get(key); // menor C + H
-
-
-
 
 		fronteirasExpandidas.remove(key);
 		fronteirasVisitadas.put(key, tabAtual);
@@ -118,6 +119,8 @@ public class Heuristic {
 
 		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(),
 				Tabuleiro.getEstadoObjetivo())) {
+
+			return true;
 		} else {
 			contadordie++;
 			resolverRecursao(nivelLocal, tabAtual);
@@ -137,32 +140,40 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			Puzzle.showStatus("Cima: "+total, temp.getTabuleiro());
-			fronteirasExpandidas.put(nivel + heuristica, temp);
+			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+				//				Puzzle.showStatus("Cima: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(nivel + heuristica, temp);
+			}
 		}
 		fachada.setEstadoInicial(estado.getTabuleiro());
 		temp = moveVazioParaEsquerda(fachada);
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			Puzzle.showStatus("Esquerda: "+total, temp.getTabuleiro());
-			fronteirasExpandidas.put(nivel + heuristica, temp);
+			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+				//				Puzzle.showStatus("Esquerda: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(nivel + heuristica, temp);
+			}
 		}
 		fachada.setEstadoInicial(estado.getTabuleiro());
 		temp = moveVazioParaBaixo(fachada);
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			Puzzle.showStatus("Baixo: "+total, temp.getTabuleiro());
-			fronteirasExpandidas.put(nivel + heuristica, temp);
+			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+				//				Puzzle.showStatus("Baixo: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(nivel + heuristica, temp);
+			}
 		}
 		fachada.setEstadoInicial(estado.getTabuleiro());
 		temp = moveVazioParaDireita(fachada);
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			Puzzle.showStatus("Direita: "+total, temp.getTabuleiro());
-			fronteirasExpandidas.put(nivel + heuristica, temp);
+			if(!fronteirasVisitadas.containsValue(temp) && fronteirasExpandidas.containsValue(temp) == false){
+				//				Puzzle.showStatus("Direita: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(nivel + heuristica, temp);
+			}
 		}
 	}
 
@@ -320,5 +331,14 @@ public class Heuristic {
 		}
 		return new int[] { -1, -1 };
 	}
+
+	static void showList(String s, SortedMap<Integer, Tabuleiro> list) {
+		for (Entry<Integer, Tabuleiro> entry : list.entrySet()) {
+			Integer key = entry.getKey();
+			Tabuleiro value = entry.getValue();
+			Puzzle.showStatus(s + " [ " + key + " ]", value.getTabuleiro());
+		}
+	}
+
 
 }

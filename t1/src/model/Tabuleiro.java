@@ -123,4 +123,34 @@ public class Tabuleiro {
 
 		return true;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(tabuleiro);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tabuleiro other = (Tabuleiro) obj;
+
+		if (!Arrays.deepEquals(tabuleiro, other.tabuleiro))
+			return false;
+		if(!(Tabuleiro.compareTabuleiros(this.getTabuleiro(), other.getTabuleiro()))){
+			return false;
+		}
+
+		System.out.println("Objeto igual encontrado na lista");
+		return true;
+	}
+
+
 }
