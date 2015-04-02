@@ -15,7 +15,7 @@ import model.Tabuleiro;
 import controller.Heuristica;
 
 public class PuzzleGui {
-	protected boolean inTest = true;
+	protected boolean inTest = false;
 	protected JTextField[] entradas;
 	protected JFrame janelaPrincipal;
 	protected Tabuleiro tabuleiro;

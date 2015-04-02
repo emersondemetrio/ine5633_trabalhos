@@ -28,23 +28,26 @@ public class Heuristica {
 		expandirFronteiras(nivelLocal, estado);
 
 		// busca o menor na lista
-		Map.Entry<Integer, Tabuleiro> entry = fronteirasExpandidas.entrySet().iterator().next();
+		Map.Entry<Integer, Tabuleiro> entry = fronteirasExpandidas.entrySet()
+				.iterator().next();
 		int key = entry.getKey();
 		tabAtual = fronteirasExpandidas.get(key); // menor C + H
 
 		fronteirasExpandidas.remove(key, tabAtual);
 		fronteirasVisitadas.put(key, tabAtual);
 
-
-		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(), Tabuleiro.getEstadoObjetivo())) {
-			//Puzzle.showStatus("Nivel " + nivelLocal, tabAtual.getTabuleiro());
-			//System.out.println("Parabens, voce ganhou o jogo!");
+		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(),
+				Tabuleiro.getEstadoObjetivo())) {
+			// Puzzle.showStatus("Nivel " + nivelLocal,
+			// tabAtual.getTabuleiro());
+			// System.out.println("Parabens, voce ganhou o jogo!");
 			fimDeJogo = true;
 			mostraCaminho(tabAtual);
 			return true;
 		} else {
 			if (resolverRecursao(nivelLocal, tabAtual)) {
-				//Puzzle.showStatus("Nivel " + nivelLocal, tabAtual.getTabuleiro());
+				// Puzzle.showStatus("Nivel " + nivelLocal,
+				// tabAtual.getTabuleiro());
 				return true;
 			} else {
 				return false;
@@ -57,7 +60,7 @@ public class Heuristica {
 	private void mostraCaminho(Tabuleiro tabAtual) {
 		Tabuleiro tab = tabAtual;
 		Puzzle.showStatus("Caminho", tab.getTabuleiro());
-		while(tab.getPai() != null){
+		while (tab.getPai() != null) {
 			Puzzle.showStatus("Caminho", tab.getPai().getTabuleiro());
 			tab = tab.getPai();
 		}
@@ -75,7 +78,8 @@ public class Heuristica {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+			if (!fronteirasExpandidas.containsValue(temp)
+					&& fronteirasVisitadas.containsValue(temp) == false) {
 				temp.setPai(estado);
 				// Puzzle.showStatus("Cima: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(total, temp);
@@ -86,7 +90,8 @@ public class Heuristica {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+			if (!fronteirasExpandidas.containsValue(temp)
+					&& fronteirasVisitadas.containsValue(temp) == false) {
 				temp.setPai(estado);
 				// Puzzle.showStatus("Esquerda: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(total, temp);
@@ -97,7 +102,8 @@ public class Heuristica {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+			if (!fronteirasExpandidas.containsValue(temp)
+					&& fronteirasVisitadas.containsValue(temp) == false) {
 				temp.setPai(estado);
 				// Puzzle.showStatus("Baixo: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(total, temp);
@@ -108,7 +114,8 @@ public class Heuristica {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+			if (!fronteirasExpandidas.containsValue(temp)
+					&& fronteirasVisitadas.containsValue(temp) == false) {
 				temp.setPai(estado);
 				// Puzzle.showStatus("Direita: "+total, temp.getTabuleiro());
 				fronteirasExpandidas.put(total, temp);
@@ -139,7 +146,8 @@ public class Heuristica {
 			 * valor. Eh necessario enviar tbm a direcao para que nao cause
 			 * nullPointerException na hora da troca.
 			 */
-			trocaPecas(novoTab, Movimentos.CIMA, posicaoVazio, valorAcimaDoVazio);
+			trocaPecas(novoTab, Movimentos.CIMA, posicaoVazio,
+					valorAcimaDoVazio);
 
 		}
 		// senhao retorna tabuleiro invalido
@@ -157,7 +165,8 @@ public class Heuristica {
 			novoTab.setEstadoInicial(tabuleiro.getTabuleiro());
 			int valorAbaixoDoVazio = novoTab.getTabuleiro()[posicaoVazio[0] + 1][posicaoVazio[1]];
 
-			trocaPecas(novoTab, Movimentos.BAIXO, posicaoVazio, valorAbaixoDoVazio);
+			trocaPecas(novoTab, Movimentos.BAIXO, posicaoVazio,
+					valorAbaixoDoVazio);
 		}
 
 		return novoTab;
@@ -167,14 +176,16 @@ public class Heuristica {
 		Tabuleiro novoTab = null;
 
 		int[] posicaoVazio = encontraPosicao(tabuleiro.getTabuleiro(), 0);
-		if (verificaSeMovimentoDoVazioEhValido(Movimentos.ESQUERDA, posicaoVazio)) {
+		if (verificaSeMovimentoDoVazioEhValido(Movimentos.ESQUERDA,
+				posicaoVazio)) {
 			novoTab = new Tabuleiro();
 			novoTab.setEstadoInicial(tabuleiro.getTabuleiro());
 			int linha = posicaoVazio[0];
 			int coluna = posicaoVazio[1];
 
 			int valorAEsquerdaDoVazio = novoTab.getTabuleiro()[linha][coluna - 1];
-			trocaPecas(novoTab, Movimentos.ESQUERDA, posicaoVazio, valorAEsquerdaDoVazio);
+			trocaPecas(novoTab, Movimentos.ESQUERDA, posicaoVazio,
+					valorAEsquerdaDoVazio);
 		}
 
 		return novoTab;
@@ -185,7 +196,8 @@ public class Heuristica {
 
 		int[] posicaoVazio = this.encontraPosicao(tabuleiro.getTabuleiro(), 0);
 
-		boolean jogadaValida = verificaSeMovimentoDoVazioEhValido(Movimentos.DIREITA, posicaoVazio);
+		boolean jogadaValida = verificaSeMovimentoDoVazioEhValido(
+				Movimentos.DIREITA, posicaoVazio);
 
 		if (jogadaValida) {
 			novoTab = new Tabuleiro();
@@ -195,13 +207,15 @@ public class Heuristica {
 
 			int valorADireitaDoVazio = novoTab.getTabuleiro()[linha][coluna + 1];
 
-			trocaPecas(novoTab, Movimentos.DIREITA, posicaoVazio, valorADireitaDoVazio);
+			trocaPecas(novoTab, Movimentos.DIREITA, posicaoVazio,
+					valorADireitaDoVazio);
 		}
 
 		return novoTab;
 	}
 
-	private void trocaPecas(Tabuleiro tabuleiro, int direcao, int[] posicaoVazio, int valorSubstituto) {
+	private void trocaPecas(Tabuleiro tabuleiro, int direcao,
+			int[] posicaoVazio, int valorSubstituto) {
 		switch (direcao) {
 
 		case Movimentos.CIMA:
@@ -229,7 +243,8 @@ public class Heuristica {
 		}
 	}
 
-	public boolean verificaSeMovimentoDoVazioEhValido(int movimento, int[] posicaoVazio) {
+	public boolean verificaSeMovimentoDoVazioEhValido(int movimento,
+			int[] posicaoVazio) {
 
 		int linha = posicaoVazio[0];
 		int coluna = posicaoVazio[1];
