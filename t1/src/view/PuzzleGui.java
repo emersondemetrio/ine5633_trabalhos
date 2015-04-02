@@ -12,7 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
 import model.Tabuleiro;
-import controller.Heuristic;
+import controller.Heuristica;
 
 public class PuzzleGui {
 	protected boolean inTest = true;
@@ -100,11 +100,13 @@ public class PuzzleGui {
 					tabuleiro.setEstadoInicial(inicial);
 					showStatus(inicial);
 
-					new Heuristic().resolverRecursao(0, tabuleiro);
+					boolean resultado = new Heuristica().resolverRecursao(0, tabuleiro);
+					if(resultado)
+						//Puzzle.showStatus("Estado Objetivo", Tabuleiro.getEstadoObjetivo());
 
-					if (!inTest) {
-						janelaPrincipal.setVisible(false);
-					}
+						if (!inTest) {
+							janelaPrincipal.setVisible(false);
+						}
 				}
 			}
 		});

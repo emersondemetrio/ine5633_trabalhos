@@ -8,129 +8,58 @@ import java.util.TreeMap;
 import model.Movimentos;
 import model.Tabuleiro;
 
-// http://heuristicswiki.wikispaces.com/N+-+Puzzle
-public class Heuristic {
-
-	// private static SortedMap<Integer, Tabuleiro> ABERTO = new
-	// TreeMap<Integer, Tabuleiro>();
-	// private static SortedMap<Integer, Tabuleiro> FECHADO = new
-	// TreeMap<Integer, Tabuleiro>();
-	// private boolean ESTADO_FINAL = false;
-	//
-	// public void resolve(Tabuleiro tabuleiro) {
-	//
-	// Tabuleiro estadoLocal = null;
-	// Tabuleiro temp = null;
-	// int heuristica = 0;
-	//
-	// ABERTO.put(0, tabuleiro);
-	//
-	// int nivelAtual = 0;
-	// while (ESTADO_FINAL == false) {
-	//
-	// // busca o proximo que entrou na lista
-	// // deve buscar a menor heuristica
-	// Map.Entry<Integer, Tabuleiro> entry = ABERTO.entrySet().iterator()
-	// .next();
-	// int key = entry.getKey();
-	//
-	// estadoLocal = ABERTO.get(key);
-	//
-	// ABERTO.remove(key);
-	//
-	// if (verificaSeGanhou(estadoLocal)) {
-	// System.out.println("SUCESSO");
-	// ESTADO_FINAL = true;
-	// } else {
-	// // gera filhos
-	// FECHADO.put(nivelAtual + heuristica, estadoLocal);
-	//
-	// // inicio da expansao dos estados
-	// temp = estadoLocal.moveVazioParaCima(estadoLocal);
-	// if (temp != null) {
-	//
-	// // calcula heuristica, soma o nivel e popula
-	// heuristica = temp.calcularHeuristicaTabuleiro();
-	// ABERTO.put(nivelAtual + heuristica, temp);
-	// }
-	// temp = estadoLocal.moveVazioParaEsquerda(estadoLocal);
-	// if (temp != null)
-	// // verificar se esse estado ja existe na fronteira (Aberto)
-	// // ou se ja foi percorrido(Fechado)se nao entao insere no
-	// // aberto
-	// // calcula heuristica, soma o nivel e popula
-	// heuristica = temp.calcularHeuristicaTabuleiro();
-	// ABERTO.put(nivelAtual + heuristica, temp);
-	// temp = estadoLocal.moveVazioParaBaixo(estadoLocal);
-	// if (temp != null)
-	// // verificar se esse estado ja existe na fronteira (Aberto)
-	// // ou se ja foi percorrido(Fechado)se nao entao insere no
-	// // aberto
-	// // calcula heuristica, soma o nivel e popula
-	// heuristica = temp.calcularHeuristicaTabuleiro();
-	// ABERTO.put(nivelAtual + heuristica, temp);
-	// temp = estadoLocal.moveVazioParaDireita(estadoLocal);
-	// if (temp != null)
-	// // verificar se esse estado ja existe na fronteira (Aberto)
-	// // ou se ja foi percorrido(Fechado)se nao entao insere no
-	// // aberto
-	// // calcula heuristica, soma o nivel e popula
-	// heuristica = temp.calcularHeuristicaTabuleiro();
-	// ABERTO.put(nivelAtual + heuristica, temp);
-	// }
-	//
-	// nivelAtual++;
-	//
-	// }
-	//
-	// }
+public class Heuristica {
 
 	SortedMap<Integer, Tabuleiro> fronteirasExpandidas = new TreeMap<Integer, Tabuleiro>();
 	SortedMap<Integer, Tabuleiro> fronteirasVisitadas = new TreeMap<Integer, Tabuleiro>();
 
-	int contadordie = 0;
+	boolean fimDeJogo = false;
 
 	public boolean resolverRecursao(int nivel, Tabuleiro estado) {
 
-		//		if (contadordie == 10) {
-		//			System.exit(0);
-		//		}
-
-		if(nivel == 0){
+		if (nivel == 0) {
 			fronteirasVisitadas.put(Integer.MAX_VALUE, estado);
 		}
 
 		int nivelLocal = nivel;
 		Tabuleiro tabAtual = null;
 
-		expandirFronteiras(nivel, estado);
-
-		//busca o menor na lista
-		Map.Entry<Integer, Tabuleiro> entry = fronteirasExpandidas.entrySet()
-				.iterator().next();
-		int key = entry.getKey();
 		nivelLocal++;
+		expandirFronteiras(nivelLocal, estado);
+
+		// busca o menor na lista
+		Map.Entry<Integer, Tabuleiro> entry = fronteirasExpandidas.entrySet().iterator().next();
+		int key = entry.getKey();
 		tabAtual = fronteirasExpandidas.get(key); // menor C + H
 
-		fronteirasExpandidas.remove(key);
+		fronteirasExpandidas.remove(key, tabAtual);
 		fronteirasVisitadas.put(key, tabAtual);
 
-		//Puzzle.showStatus("Tab atual: ", tabAtual.getTabuleiro());
 
 		if (Tabuleiro.compareTabuleiros(tabAtual.getTabuleiro(), Tabuleiro.getEstadoObjetivo())) {
-			Puzzle.showStatus("Nivel " + nivel, tabAtual.getTabuleiro());
-			System.out.println("Parabens, voce ganhou o jogo!");
-			Heuristic.showList("Caminho", fronteirasVisitadas);
+			//Puzzle.showStatus("Nivel " + nivelLocal, tabAtual.getTabuleiro());
+			//System.out.println("Parabens, voce ganhou o jogo!");
+			fimDeJogo = true;
+			mostraCaminho(tabAtual);
 			return true;
 		} else {
-			contadordie++;
 			if (resolverRecursao(nivelLocal, tabAtual)) {
-				//Puzzle.showStatus("Nivel " + nivel, tabAtual.getTabuleiro());
+				//Puzzle.showStatus("Nivel " + nivelLocal, tabAtual.getTabuleiro());
 				return true;
 			} else {
 				return false;
 			}
 
+		}
+
+	}
+
+	private void mostraCaminho(Tabuleiro tabAtual) {
+		Tabuleiro tab = tabAtual;
+		Puzzle.showStatus("Caminho", tab.getTabuleiro());
+		while(tab.getPai() != null){
+			Puzzle.showStatus("Caminho", tab.getPai().getTabuleiro());
+			tab = tab.getPai();
 		}
 
 	}
@@ -146,9 +75,10 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
-				//				Puzzle.showStatus("Cima: "+total, temp.getTabuleiro());
-				fronteirasExpandidas.put(nivel + heuristica, temp);
+			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+				temp.setPai(estado);
+				// Puzzle.showStatus("Cima: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(total, temp);
 			}
 		}
 		fachada.setEstadoInicial(estado.getTabuleiro());
@@ -156,9 +86,10 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
-				//				Puzzle.showStatus("Esquerda: "+total, temp.getTabuleiro());
-				fronteirasExpandidas.put(nivel + heuristica, temp);
+			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+				temp.setPai(estado);
+				// Puzzle.showStatus("Esquerda: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(total, temp);
 			}
 		}
 		fachada.setEstadoInicial(estado.getTabuleiro());
@@ -166,9 +97,10 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
-				//				Puzzle.showStatus("Baixo: "+total, temp.getTabuleiro());
-				fronteirasExpandidas.put(nivel + heuristica, temp);
+			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+				temp.setPai(estado);
+				// Puzzle.showStatus("Baixo: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(total, temp);
 			}
 		}
 		fachada.setEstadoInicial(estado.getTabuleiro());
@@ -176,9 +108,10 @@ public class Heuristic {
 		if (temp != null) {
 			heuristica = temp.calcularHeuristicaTabuleiro();
 			total = nivel + heuristica;
-			if(!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false){
-				//				Puzzle.showStatus("Direita: "+total, temp.getTabuleiro());
-				fronteirasExpandidas.put(nivel + heuristica, temp);
+			if (!fronteirasExpandidas.containsValue(temp) && fronteirasVisitadas.containsValue(temp) == false) {
+				temp.setPai(estado);
+				// Puzzle.showStatus("Direita: "+total, temp.getTabuleiro());
+				fronteirasExpandidas.put(total, temp);
 			}
 		}
 	}
@@ -224,8 +157,7 @@ public class Heuristic {
 			novoTab.setEstadoInicial(tabuleiro.getTabuleiro());
 			int valorAbaixoDoVazio = novoTab.getTabuleiro()[posicaoVazio[0] + 1][posicaoVazio[1]];
 
-			trocaPecas(novoTab, Movimentos.BAIXO, posicaoVazio,
-					valorAbaixoDoVazio);
+			trocaPecas(novoTab, Movimentos.BAIXO, posicaoVazio, valorAbaixoDoVazio);
 		}
 
 		return novoTab;
@@ -235,16 +167,14 @@ public class Heuristic {
 		Tabuleiro novoTab = null;
 
 		int[] posicaoVazio = encontraPosicao(tabuleiro.getTabuleiro(), 0);
-		if (verificaSeMovimentoDoVazioEhValido(Movimentos.ESQUERDA,
-				posicaoVazio)) {
+		if (verificaSeMovimentoDoVazioEhValido(Movimentos.ESQUERDA, posicaoVazio)) {
 			novoTab = new Tabuleiro();
 			novoTab.setEstadoInicial(tabuleiro.getTabuleiro());
 			int linha = posicaoVazio[0];
 			int coluna = posicaoVazio[1];
 
 			int valorAEsquerdaDoVazio = novoTab.getTabuleiro()[linha][coluna - 1];
-			trocaPecas(novoTab, Movimentos.ESQUERDA, posicaoVazio,
-					valorAEsquerdaDoVazio);
+			trocaPecas(novoTab, Movimentos.ESQUERDA, posicaoVazio, valorAEsquerdaDoVazio);
 		}
 
 		return novoTab;
@@ -255,8 +185,7 @@ public class Heuristic {
 
 		int[] posicaoVazio = this.encontraPosicao(tabuleiro.getTabuleiro(), 0);
 
-		boolean jogadaValida = verificaSeMovimentoDoVazioEhValido(
-				Movimentos.DIREITA, posicaoVazio);
+		boolean jogadaValida = verificaSeMovimentoDoVazioEhValido(Movimentos.DIREITA, posicaoVazio);
 
 		if (jogadaValida) {
 			novoTab = new Tabuleiro();
@@ -266,8 +195,7 @@ public class Heuristic {
 
 			int valorADireitaDoVazio = novoTab.getTabuleiro()[linha][coluna + 1];
 
-			trocaPecas(novoTab, Movimentos.DIREITA, posicaoVazio,
-					valorADireitaDoVazio);
+			trocaPecas(novoTab, Movimentos.DIREITA, posicaoVazio, valorADireitaDoVazio);
 		}
 
 		return novoTab;
@@ -301,8 +229,7 @@ public class Heuristic {
 		}
 	}
 
-	public boolean verificaSeMovimentoDoVazioEhValido(int movimento,
-			int[] posicaoVazio) {
+	public boolean verificaSeMovimentoDoVazioEhValido(int movimento, int[] posicaoVazio) {
 
 		int linha = posicaoVazio[0];
 		int coluna = posicaoVazio[1];
@@ -345,6 +272,5 @@ public class Heuristic {
 			Puzzle.showStatus(s + " [ " + key + " ]", value.getTabuleiro());
 		}
 	}
-
 
 }

@@ -2,27 +2,35 @@ package model;
 
 import java.util.Arrays;
 
-
 public class Tabuleiro {
 
 	protected int[][] tabuleiro;
 	protected int valorHeuristicaTabuleiro;
+	protected Tabuleiro pai;
 
 	public int[][] getTabuleiro() {
 		return this.tabuleiro;
 	}
 
+	public Tabuleiro getPai() {
+		return this.pai;
+	}
+
+	public void setPai(Tabuleiro tab) {
+		this.pai = tab;
+	}
+
 	public void setEstadoInicial(int[][] estadoInicial) {
-		//this.tabuleiro = estadoInicial;
+		// this.tabuleiro = estadoInicial;
 		int[][] novoEstado = new int[estadoInicial.length][];
 		for (int i = 0; i < estadoInicial.length; i++) {
 			novoEstado[i] = Arrays.copyOf(estadoInicial[i], estadoInicial[i].length);
 		}
 		this.tabuleiro = novoEstado;
+		this.pai = null;
 	}
 
-
-	public void setEstado(int[][] estado){
+	public void setEstado(int[][] estado) {
 		final int[][] novoEstado = new int[estado.length][];
 		for (int i = 0; i < estado.length; i++) {
 			System.arraycopy(estado[i], 0, novoEstado[i], 0, estado[i].length);
@@ -35,8 +43,7 @@ public class Tabuleiro {
 		int valorHeuristica = 0;
 		for (int i = 0; i < tabuleiro.length; i++) {
 			for (int j = 0; j < tabuleiro[0].length; j++) {
-				valorHeuristica += this.calcularDistanciaItemOrigem(
-						tabuleiro[i][j], i, j);
+				valorHeuristica += this.calcularDistanciaItemOrigem(tabuleiro[i][j], i, j);
 			}
 		}
 
@@ -47,8 +54,7 @@ public class Tabuleiro {
 
 		int[] posObjetivo = this.getPosicalObjetivo(item);
 
-		int numeroPassosAteObjetivo = Math.abs((posObjetivo[0]) - (linha))
-				+ Math.abs((posObjetivo[1]) - (coluna));
+		int numeroPassosAteObjetivo = Math.abs((posObjetivo[0]) - (linha)) + Math.abs((posObjetivo[1]) - (coluna));
 
 		return numeroPassosAteObjetivo;
 	}
@@ -56,8 +62,6 @@ public class Tabuleiro {
 	public static int[][] getEstadoObjetivo() {
 		return new int[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 0 } };
 	}
-
-
 
 	public int[] getPosicalObjetivo(int valor) {
 		int[] error = new int[] { -1, -1 };
@@ -144,12 +148,11 @@ public class Tabuleiro {
 
 		if (!Arrays.deepEquals(tabuleiro, other.tabuleiro))
 			return false;
-		if(!(Tabuleiro.compareTabuleiros(this.getTabuleiro(), other.getTabuleiro()))){
+		if (!(Tabuleiro.compareTabuleiros(this.getTabuleiro(), other.getTabuleiro()))) {
 			return false;
 		}
 
 		return true;
 	}
-
 
 }
