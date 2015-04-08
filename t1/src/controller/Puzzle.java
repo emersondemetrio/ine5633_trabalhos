@@ -9,7 +9,7 @@ public class Puzzle {
 
 	public Puzzle() {
 		tab = new Tabuleiro();
-		new PuzzleGui("Entre com um estado inicial", tab);
+		new PuzzleGui("Entre com um estado inicial", tab);		
 	}
 
 	public static void showStatus(String msg, int[][] estado) {
