@@ -1,6 +1,6 @@
 package controller;
 
-import model.GoMokuBoard;
+import model.TabuleiroGoMoku;
 
 
 public class CincoEmLinha {
@@ -8,7 +8,7 @@ public class CincoEmLinha {
 
 	public static void main(String[] args) {
 
-		GoMokuBoard t = new GoMokuBoard(15, 15, 20, 20);
+		TabuleiroGoMoku t = new TabuleiroGoMoku(15, 15, 20, 20);
 
 		//		Tabuleiro tab = new Tabuleiro();
 		//		boolean vezDoComputador = true;
