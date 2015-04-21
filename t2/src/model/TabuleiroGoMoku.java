@@ -136,7 +136,7 @@ public class TabuleiroGoMoku extends Canvas {
 					}
 		}
 
-		setCell(melhorColuna, melhorLinha, pecadDoAdversario == ZERO ? XIS : ZERO);
+		setaCasa(melhorColuna, melhorLinha, pecadDoAdversario == ZERO ? XIS : ZERO);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class TabuleiroGoMoku extends Canvas {
 		int j = y / alturaCasa;
 
 		if (casas[i][j] == VAZIO) {
-			setCell(i, j, pecadDoAdversario);
+			setaCasa(i, j, pecadDoAdversario);
 			nextTurn();
 		}
 
@@ -225,7 +225,7 @@ public class TabuleiroGoMoku extends Canvas {
 	/**
 	 * Coloca peça em determinada casa (linha e coluna)
 	 */
-	protected void setCell(int col, int row, int val) {
+	protected void setaCasa(int col, int row, int val) {
 		numVez++;
 		casas[col][row] = val;
 		if (verificaVencedor(col, row)) {
