@@ -14,11 +14,11 @@ public class GoMoku extends Applet {
 	public void init() {
 
 		setLayout(null);
-		setBackground(new Color(0, 150, 0)); // verde escuro
+		setBackground(new Color(255, 255, 153)); // verde escuro
 
 		/* Cria os componentes e adiciona na applets. */
 
-		TabuleiroGoMoku board = new TabuleiroGoMoku(15, 15, 12, 12);
+		TabuleiroGoMoku board = new TabuleiroGoMoku(5, 5, 12, 12);
 		add(board);
 
 

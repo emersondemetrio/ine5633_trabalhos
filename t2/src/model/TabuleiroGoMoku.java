@@ -159,9 +159,13 @@ public class TabuleiroGoMoku extends Canvas {
 
 		// recupera jogada feita para chegar ao melhor tabuleiro
 		Tabuleiro aux = melhorTabuleirosNivel5;
-		for (int i = 5; i > 1; i--) {
+		for (int i = 3; i > 1; i--) {
 			aux = melhorTabuleirosNivel5.getPai();
+			melhorTabuleirosNivel5 = aux;
 		}
+		
+		
+		
 		melhorColunaElinha = aux.getJogadaOrigem();
 
 		// gera 5 niveis de filhos
@@ -176,7 +180,7 @@ public class TabuleiroGoMoku extends Canvas {
 		List<Tabuleiro> listaTabuleirosQuintoNivel = new ArrayList<Tabuleiro>();
 		listaTabuleirosQuintoNivel = geraFilhosQuintoNivel(tabInicial);
 
-		Tabuleiro aux = null;
+		Tabuleiro aux = tabInicial;
 		for (Tabuleiro tabuleiro : listaTabuleirosQuintoNivel) {
 			if (tabuleiro.getValor() > aux.getValor()) {
 				aux = tabuleiro;
@@ -189,19 +193,27 @@ public class TabuleiroGoMoku extends Canvas {
 	// metodo recursivo
 	private List<Tabuleiro> geraFilhosQuintoNivel(Tabuleiro tabInicial) {
 		List<Tabuleiro> listaTabuleirosQuintoNivel = new ArrayList<Tabuleiro>();
-
+		
 		List<int[]> posicoesFronteira = getExpandiveis(tabInicial);
 		tabInicial.setPosicoesFronteira(posicoesFronteira);
 		tabInicial.setFilhos(criaFilhos(tabInicial, posicoesFronteira));
-		if (tabInicial.getNivel() == 5) {
+		if (tabInicial.getNivel() == 2) {
+			
 			listaTabuleirosQuintoNivel.addAll(tabInicial.getFilhos());
+			
+			//teste
 			for (Tabuleiro tab : listaTabuleirosQuintoNivel) {
-				calculaUtilidade(tab);
+				tab.setValor(new Float(1));				
 			}
-			// calcula valores
+			listaTabuleirosQuintoNivel.get(listaTabuleirosQuintoNivel.size()-1).setValor(new Float(10));
+			
+			//calculaUtilidade(tab);
+			
 		} else {
 			for (Tabuleiro tab : tabInicial.getFilhos()) {
-				geraFilhosQuintoNivel(tab);
+				listaTabuleirosQuintoNivel.addAll(geraFilhosQuintoNivel(tab));
+				System.out.println(listaTabuleirosQuintoNivel.size());
+				System.out.println(tabInicial.getNivel());
 			}
 		}
 
