@@ -5,11 +5,34 @@ import java.util.List;
 
 public class Tabuleiro {
 
+	protected Tabuleiro pai;
+	protected float valor;
 	protected int[][] tabuleiro = new int[15][15];
 	protected List<int[]> posicoesOcupadas = new ArrayList<>();
-	protected float valor;
-
 	protected List<int[]> posicoesFronteira = new ArrayList<int[]>();
+	
+	public Tabuleiro(int[][] estado) {
+		setTabuleiro(estado);
+		setPai(null);
+		
+		setPosicoesFronteira(getPosicoesFronteira());
+	}
+
+	public Tabuleiro getPai() {
+		return pai;
+	}
+
+	public void setPai(Tabuleiro pai) {
+		this.pai = pai;
+	}
+
+	public List<int[]> getPosicoesFronteira() {
+		return posicoesFronteira;
+	}
+
+	public void setPosicoesFronteira(List<int[]> posicoesFronteira) {
+		this.posicoesFronteira = posicoesFronteira;
+	}
 
 	public ArrayList<int[]> getExpansiveis() {
 		ArrayList<int[]> expansiveis = new ArrayList<int[]>();
