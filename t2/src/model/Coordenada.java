@@ -17,9 +17,12 @@ public class Coordenada {
 
 	public boolean jogadaPossivelDireita(int[][] tabuleiro, int linha,
 			int coluna) {
+		System.out.println("entrei");
 		try {
+			System.out.println("try");
 			return tabuleiro[linha][coluna + 1] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
+			System.out.println("catch" + npe);
 			return false;
 		}
 	}
@@ -28,7 +31,7 @@ public class Coordenada {
 			int coluna) {
 		try {
 			return tabuleiro[linha][coluna - 1] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false;
 		}
 	}
@@ -36,7 +39,7 @@ public class Coordenada {
 	public boolean jogadaPossivelCima(int[][] tabuleiro, int linha, int coluna) {
 		try {
 			return tabuleiro[linha - 1][coluna] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false;
 		}
 	}
@@ -44,7 +47,7 @@ public class Coordenada {
 	public boolean jogadaPossivelBaixo(int[][] tabuleiro, int linha, int coluna) {
 		try {
 			return tabuleiro[linha + 1][coluna] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false;
 		}
 	}
@@ -56,7 +59,7 @@ public class Coordenada {
 			int novaColuna = coluna - 1;
 
 			return tabuleiro[novaLinha][novaColuna] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false; // borda
 		}
 	}
@@ -68,7 +71,7 @@ public class Coordenada {
 			int novaColuna = coluna + 1;
 
 			return tabuleiro[novaLinha][novaColuna] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false; // borda
 		}
 	}
@@ -80,7 +83,7 @@ public class Coordenada {
 			int novaColuna = coluna - 1;
 
 			return tabuleiro[novaLinha][novaColuna] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false; // borda
 		}
 	}
@@ -93,7 +96,7 @@ public class Coordenada {
 			int novaColuna = coluna + 1;
 
 			return tabuleiro[novaLinha][novaColuna] == ZERO ? true : false;
-		} catch (NullPointerException npe) {
+		} catch (Exception npe) {
 			return false; // borda
 		}
 	}
