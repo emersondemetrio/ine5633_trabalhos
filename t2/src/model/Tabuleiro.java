@@ -10,12 +10,41 @@ public class Tabuleiro {
 	protected int[][] tabuleiro = new int[15][15];
 	protected List<int[]> posicoesOcupadas = new ArrayList<>();
 	protected List<int[]> posicoesFronteira = new ArrayList<int[]>();
+	protected int[] jogadaOrigem;
+	protected int nivel;
+	
+
+	protected List<Tabuleiro> filhos;
 	
 	public Tabuleiro(int[][] estado) {
 		setTabuleiro(estado);
 		setPai(null);
 		
 		setPosicoesFronteira(getPosicoesFronteira());
+	}
+	
+	public int getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(int nivel) {
+		this.nivel = nivel;
+	}
+
+	public int[] getJogadaOrigem() {
+		return jogadaOrigem;
+	}
+	
+	public void setJogadaOrigem(int[] jogadaOrigem) {
+		this.jogadaOrigem = jogadaOrigem;
+	}
+	
+	public List<Tabuleiro> getFilhos() {
+		return filhos;
+	}
+	
+	public void setFilhos(List<Tabuleiro> filhos) {
+		this.filhos = filhos;
 	}
 
 	public Tabuleiro getPai() {
