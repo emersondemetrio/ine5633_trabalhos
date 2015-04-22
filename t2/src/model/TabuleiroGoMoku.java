@@ -465,7 +465,6 @@ public class TabuleiroGoMoku extends Canvas {
 			g.drawLine(x0, y0 + j * alturaCasa, x0 + largura, y0 + j
 					* alturaCasa);
 
-		// Draw pieces
 		g.setColor(fgColor);
 		for (int i = nColunas - 1; i >= 0; i--)
 			for (int j = nLinhas - 1; j >= 0; j--)
