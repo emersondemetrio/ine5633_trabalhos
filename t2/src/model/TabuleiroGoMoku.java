@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 public class TabuleiroGoMoku extends Canvas {
 
+	
 	/**
 	 * representacao do tabuleiro com seus estados
 	 */
