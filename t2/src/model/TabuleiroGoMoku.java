@@ -128,12 +128,20 @@ public class TabuleiroGoMoku extends Canvas {
 			melhorColuna = temp[0];
 			melhorLinha = temp[1];
 
-			/*
-			 * MODO FORCA BRUTA for (int i = nColunas - 1; i >= 0; i--) for (int
-			 * j = nLinhas - 1; j >= 0; j--) if (casas[i][j] == VAZIO) { int
-			 * avaliacao = calculaValorDaCasa(i, j); if (avaliacao > melhorNota)
-			 * { melhorNota = avaliacao; melhorColuna = i; melhorLinha = j; } }
-			 */
+			
+			/* FORCA BRUTA
+			for (int i = nColunas - 1; i >= 0; i--)
+				for (int j = nLinhas - 1; j >= 0; j--)
+					if (casas[i][j] == VAZIO) {
+						int avaliacao = calculaValorDaCasa(i, j);
+						if (avaliacao > melhorNota) {
+							melhorNota = avaliacao;
+							melhorColuna = i;
+							melhorLinha = j;
+						}
+					}
+			*/
+
 		}
 
 		setaCasa(melhorColuna, melhorLinha, pecadDoAdversario == ZERO ? XIS
@@ -178,18 +186,20 @@ public class TabuleiroGoMoku extends Canvas {
 		return aux;
 	}
 
-	
-	//metodo recursivo
+	// metodo recursivo
 	private List<Tabuleiro> geraFilhosQuintoNivel(Tabuleiro tabInicial) {
 		List<Tabuleiro> listaTabuleirosQuintoNivel = new ArrayList<Tabuleiro>();
 
-
+		List<int[]> posicoesFronteira = getExpandiveis(tabInicial);
+		tabInicial.setPosicoesFronteira(posicoesFronteira);
+		tabInicial.setFilhos(criaFilhos(tabInicial, posicoesFronteira));
 		if (tabInicial.getNivel() == 5) {
 			listaTabuleirosQuintoNivel.addAll(tabInicial.getFilhos());
+			for (Tabuleiro tab : listaTabuleirosQuintoNivel) {
+				calculaUtilidade(tab);
+			}
+			// calcula valores
 		} else {
-			List<int[]> posicoesFronteira = getExpandiveis(tabInicial);
-			tabInicial.setPosicoesFronteira(posicoesFronteira);
-			tabInicial.setFilhos(criaFilhos(tabInicial, posicoesFronteira));
 			for (Tabuleiro tab : tabInicial.getFilhos()) {
 				geraFilhosQuintoNivel(tab);
 			}
@@ -198,22 +208,52 @@ public class TabuleiroGoMoku extends Canvas {
 		return listaTabuleirosQuintoNivel;
 	}
 
+	private void calculaUtilidade(Tabuleiro tab) {
+		int utilidade = 0;
+		int[][] tabuleiro = tab.getTabuleiro();
+		
+		for (int i = 0; i < tabuleiro.length; i++) {
+			for (int j = 0; j < tabuleiro[0].length; j++) {
+				if (tabuleiro[i][j] != VAZIO) {
+					
+					//verificar duplas, triplas e quadruplas. 
+					//se as duplas, triplas ou quadruplas estiverem com as pontas fechadas, ignorar essa duplas, triplas ou quadruplas
+					//se as duas pontas estiverem abertas a nota tem que ser mais alta
+					//verificar em todas as direções. cuidar para nao repetir calculos.
+					//
+		
+					
+				}
+			}
+		}
+		
+		
+		
+		
+		
+		tab.setValor(new Float(1));
+	}
+
 	private List<Tabuleiro> criaFilhos(Tabuleiro tabInicial,
 			List<int[]> posicoesFronteira) {
 		List<Tabuleiro> filhos = new ArrayList<Tabuleiro>();
 		Tabuleiro aux = tabInicial;
-		
+
 		for (int[] fronteira : posicoesFronteira) {
-			if(tabInicial.getNivel() % 2 != 0){
-				aux.getTabuleiro()[fronteira[0]][fronteira[1]] = XIS;	
+			if (tabInicial.getNivel() % 2 != 0) {
+				aux.getTabuleiro()[fronteira[0]][fronteira[1]] = XIS;
 			} else {
-				aux.getTabuleiro()[fronteira[0]][fronteira[1]] = ZERO;	
+				aux.getTabuleiro()[fronteira[0]][fronteira[1]] = ZERO;
 			}
-			filhos.add(new Tabuleiro(aux.getTabuleiro()));
-			
+			Tabuleiro tabuleiro = new Tabuleiro(aux.getTabuleiro());
+			tabuleiro.setNivel(tabInicial.getNivel() + 1);
+			tabuleiro.setPai(tabInicial);
+			tabuleiro.setJogadaOrigem(new int[] { fronteira[0], fronteira[1] });
+			filhos.add(tabuleiro);
+
 		}
-		
-		return null;
+
+		return filhos;
 	}
 
 	public List<int[]> getExpandiveis(Tabuleiro tab) {
@@ -222,132 +262,157 @@ public class TabuleiroGoMoku extends Canvas {
 
 		for (int i = 0; i < tabuleiro.length; i++) {
 			for (int j = 0; j < tabuleiro[0].length; j++) {
-				if(tabuleiro[ i ][ j ] != VAZIO){
-					posicoesExpandiveis.addAll(ehExpansivel(i, j, tabuleiro));					
+				if (tabuleiro[i][j] != VAZIO) {
+					posicoesExpandiveis.addAll(ehExpansivel(i, j, tabuleiro));
 				}
 			}
 		}
-		
+
 		return posicoesExpandiveis;
 	}
 
 	public List<int[]> ehExpansivel(int linha, int coluna, int[][] tabuleiro) {
 		ArrayList<int[]> posicoesExpandiveis = new ArrayList<int[]>();
-		
-				 posicoesExpandiveis.add(moveParaDireita(linha, coluna, tabuleiro));
-				 posicoesExpandiveis.add(moveParaEsquerda(linha, coluna, tabuleiro));
-				 posicoesExpandiveis.add(moveParaCima(linha, coluna, tabuleiro)); 
-				 posicoesExpandiveis.add(moveParaBaixo(linha, coluna, tabuleiro));
-				 posicoesExpandiveis.add(moveParaDiagDirCima(linha, coluna, tabuleiro));
-				 posicoesExpandiveis.add(moveParaDiagDirBaixo(linha, coluna, tabuleiro));
-				 posicoesExpandiveis.add(moveParaDiagEsqCima(linha, coluna, tabuleiro));
-				 posicoesExpandiveis.add(moveParaDiagEsqBaixo(linha, coluna, tabuleiro));
-				 
-				 return posicoesExpandiveis;
+
+		int[] moveParaDireita = moveParaDireita(linha, coluna, tabuleiro);
+		if (moveParaDireita != null)
+			posicoesExpandiveis.add(moveParaDireita);
+
+		int[] moveParaEsquerda = moveParaEsquerda(linha, coluna, tabuleiro);
+		if (moveParaEsquerda != null)
+			posicoesExpandiveis.add(moveParaEsquerda);
+
+		int[] moveParaCima = moveParaCima(linha, coluna, tabuleiro);
+		if (moveParaCima != null)
+			posicoesExpandiveis.add(moveParaCima);
+
+		int[] moveParaBaixo = moveParaBaixo(linha, coluna, tabuleiro);
+		if (moveParaBaixo != null)
+			posicoesExpandiveis.add(moveParaBaixo);
+
+		int[] moveParaDiagDirCima = moveParaDiagDirCima(linha, coluna,
+				tabuleiro);
+		if (moveParaDiagDirCima != null)
+			posicoesExpandiveis.add(moveParaDiagDirCima);
+
+		int[] moveParaDiagDirBaixo = moveParaDiagDirBaixo(linha, coluna,
+				tabuleiro);
+		if (moveParaDiagDirBaixo != null)
+			posicoesExpandiveis.add(moveParaDiagDirBaixo);
+
+		int[] moveParaDiagEsqCima = moveParaDiagEsqCima(linha, coluna,
+				tabuleiro);
+		if (moveParaDiagEsqCima != null)
+			posicoesExpandiveis.add(moveParaDiagEsqCima);
+
+		int[] moveParaDiagEsqBaixo = moveParaDiagEsqBaixo(linha, coluna,
+				tabuleiro);
+		if (moveParaDiagEsqBaixo != null)
+			posicoesExpandiveis.add(moveParaDiagEsqBaixo);
+
+		return posicoesExpandiveis;
 	}
-	
-	
 
 	private int[] moveParaDiagEsqBaixo(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha + 1][ coluna - 1] == VAZIO ){
-				posicaoExpandivel[0] =   linha + 1;
-				posicaoExpandivel[1] =   coluna - 1;
+		try {
+			if (tabuleiro[linha + 1][coluna - 1] == VAZIO) {
+				posicaoExpandivel[0] = linha + 1;
+				posicaoExpandivel[1] = coluna - 1;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
 	private int[] moveParaDiagDirBaixo(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha +1 ][ coluna + 1] == VAZIO ){
-				posicaoExpandivel[0] =   linha + 1;
-				posicaoExpandivel[1] =   coluna + 1;
+		try {
+			if (tabuleiro[linha + 1][coluna + 1] == VAZIO) {
+				posicaoExpandivel[0] = linha + 1;
+				posicaoExpandivel[1] = coluna + 1;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
 	private int[] moveParaDiagDirCima(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha - 1 ][ coluna + 1] == VAZIO ){
-				posicaoExpandivel[0] =   linha - 1;
-				posicaoExpandivel[1] =   coluna + 1;
+		try {
+			if (tabuleiro[linha - 1][coluna + 1] == VAZIO) {
+				posicaoExpandivel[0] = linha - 1;
+				posicaoExpandivel[1] = coluna + 1;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
 	private int[] moveParaBaixo(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha + 1 ][ coluna] == VAZIO ){
-				posicaoExpandivel[0] =   linha + 1;
-				posicaoExpandivel[1] =   coluna;
+		try {
+			if (tabuleiro[linha + 1][coluna] == VAZIO) {
+				posicaoExpandivel[0] = linha + 1;
+				posicaoExpandivel[1] = coluna;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
 	private int[] moveParaCima(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha -1 ][ coluna ] == VAZIO ){
-				posicaoExpandivel[0] =   linha - 1;
-				posicaoExpandivel[1] =   coluna;
+		try {
+			if (tabuleiro[linha - 1][coluna] == VAZIO) {
+				posicaoExpandivel[0] = linha - 1;
+				posicaoExpandivel[1] = coluna;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
-	private int[] moveParaEsquerda(int linha, int coluna, int[][] tabuleiro ) {
+	private int[] moveParaEsquerda(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha ][ coluna - 1] == VAZIO ){
-				posicaoExpandivel[0] =   linha;
-				posicaoExpandivel[1] =   coluna - 1;
+		try {
+			if (tabuleiro[linha][coluna - 1] == VAZIO) {
+				posicaoExpandivel[0] = linha;
+				posicaoExpandivel[1] = coluna - 1;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
-	private int[] moveParaDireita (int linha, int coluna, int[][] tabuleiro ){
+	private int[] moveParaDireita(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha ][ coluna + 1] == VAZIO ){
-				posicaoExpandivel[0] =   linha;
-				posicaoExpandivel[1] =   coluna + 1;
+		try {
+			if (tabuleiro[linha][coluna + 1] == VAZIO) {
+				posicaoExpandivel[0] = linha;
+				posicaoExpandivel[1] = coluna + 1;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
 
-	private int[] moveParaDiagEsqCima(int linha, int coluna, int[][] tabuleiro ) {
+	private int[] moveParaDiagEsqCima(int linha, int coluna, int[][] tabuleiro) {
 		int[] posicaoExpandivel = new int[2];
-		try{
-			if( tabuleiro[ linha - 1][ coluna - 1] == VAZIO ){
-				posicaoExpandivel[0] =   linha - 1;
-				posicaoExpandivel[1] =   coluna - 1;
+		try {
+			if (tabuleiro[linha - 1][coluna - 1] == VAZIO) {
+				posicaoExpandivel[0] = linha - 1;
+				posicaoExpandivel[1] = coluna - 1;
 			}
-		} catch( ArrayIndexOutOfBoundsException npe){
-				posicaoExpandivel = new int[0];
+		} catch (ArrayIndexOutOfBoundsException npe) {
+			posicaoExpandivel = null;
 		}
 		return posicaoExpandivel;
 	}
@@ -475,8 +540,8 @@ public class TabuleiroGoMoku extends Canvas {
 			i += dx[direction];
 			j += dy[direction];
 
-			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // are we on
-																	// board?
+			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // esta na borda?
+																	
 				line[k] = casas[i][j];
 			else
 				line[k] = BORDA;
@@ -490,8 +555,8 @@ public class TabuleiroGoMoku extends Canvas {
 			i -= dx[direction];
 			j -= dy[direction];
 
-			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // are we on
-																	// board?
+			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // esta na borda?
+																	
 				line[k] = casas[i][j];
 			else
 				line[k] = BORDA;
