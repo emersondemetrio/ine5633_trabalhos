@@ -48,6 +48,13 @@ public class TabuleiroGoMoku extends Canvas {
 	Color fgColor;
 	Dimension dimensaoMinima;
 
+
+
+	//geracao de filhos limitada 
+	//subtracao do calculo do adversario
+	//resumir o relatorio
+
+
 	// Local atual do cursor
 	int colunaAtual;
 	int linhaAtual;
@@ -64,15 +71,13 @@ public class TabuleiroGoMoku extends Canvas {
 	 * @param alturaCasa
 	 *            altura individual de cada casa
 	 */
-	public TabuleiroGoMoku(int nColunas, int nLinhas, int larguraCasa,
-			int alturaCasa) {
+	public TabuleiroGoMoku(int nColunas, int nLinhas, int larguraCasa, int alturaCasa) {
 
 		this.nColunas = nColunas;
 		this.nLinhas = nLinhas;
 		this.larguraCasa = larguraCasa;
 		this.alturaCasa = alturaCasa;
-		dimensaoMinima = new Dimension(nColunas * larguraCasa + 1, nLinhas
-				* alturaCasa + 1);
+		dimensaoMinima = new Dimension(nColunas * larguraCasa + 1, nLinhas * alturaCasa + 1);
 
 		bgColor = (getBackground() == null) ? Color.white : getBackground();
 		fgColor = (getForeground() == null) ? Color.black : getForeground();
@@ -116,7 +121,6 @@ public class TabuleiroGoMoku extends Canvas {
 
 		int melhorLinha = -1;
 		int melhorColuna = -1;
-		int melhorNota = -1;
 
 		if (numVez == 0) {
 			melhorLinha = nLinhas / 2;
@@ -128,24 +132,19 @@ public class TabuleiroGoMoku extends Canvas {
 			melhorColuna = temp[0];
 			melhorLinha = temp[1];
 
-			
-			/* FORCA BRUTA
-			for (int i = nColunas - 1; i >= 0; i--)
-				for (int j = nLinhas - 1; j >= 0; j--)
-					if (casas[i][j] == VAZIO) {
-						int avaliacao = calculaValorDaCasa(i, j);
-						if (avaliacao > melhorNota) {
-							melhorNota = avaliacao;
-							melhorColuna = i;
-							melhorLinha = j;
-						}
-					}
-			*/
+
+			//			for (int i = nColunas - 1; i >= 0; i--) 
+			//				for (int j = nLinhas - 1; j >= 0; j--) 
+			//					if (casas[i][j] == VAZIO) { 
+			//						int avaliacao = calculaValorDaCasa(i, j); 
+			//						if (avaliacao > melhorNota){ 
+			//							melhorNota = avaliacao; melhorColuna = i; melhorLinha = j; 
+			//						} 
+			//					}
 
 		}
 
-		setaCasa(melhorColuna, melhorLinha, pecadDoAdversario == ZERO ? XIS
-				: ZERO);
+		setaCasa(melhorColuna, melhorLinha, ZERO);
 	}
 
 	private int[] melhorJogada(int[][] casas, int numVez) {
@@ -154,8 +153,7 @@ public class TabuleiroGoMoku extends Canvas {
 		Tabuleiro tabInicial = new Tabuleiro(casas);
 
 		// retorna o melhor tabuleiro
-		Tabuleiro melhorTabuleirosNivel5 = buscaMelhorTabuleiro(tabInicial,
-				nivel);
+		Tabuleiro melhorTabuleirosNivel5 = buscaMelhorTabuleiro(tabInicial, nivel);
 
 		// recupera jogada feita para chegar ao melhor tabuleiro
 		Tabuleiro aux = melhorTabuleirosNivel5;
@@ -163,15 +161,9 @@ public class TabuleiroGoMoku extends Canvas {
 			aux = melhorTabuleirosNivel5.getPai();
 			melhorTabuleirosNivel5 = aux;
 		}
-		
-		
-		
+
 		melhorColunaElinha = aux.getJogadaOrigem();
 
-		// gera 5 niveis de filhos
-
-		// avalia os filhos (heuristica)
-		// retorna a melhor jogada
 		return melhorColunaElinha;
 
 	}
@@ -191,29 +183,23 @@ public class TabuleiroGoMoku extends Canvas {
 	}
 
 	// metodo recursivo
-	private List<Tabuleiro> geraFilhosQuintoNivel(Tabuleiro tabInicial) {
+	private List<Tabuleiro> geraFilhosQuintoNivel(Tabuleiro tabuleiro) {
 		List<Tabuleiro> listaTabuleirosQuintoNivel = new ArrayList<Tabuleiro>();
-		
-		List<int[]> posicoesFronteira = getExpandiveis(tabInicial);
-		tabInicial.setPosicoesFronteira(posicoesFronteira);
-		tabInicial.setFilhos(criaFilhos(tabInicial, posicoesFronteira));
-		if (tabInicial.getNivel() == 2) {
-			
-			listaTabuleirosQuintoNivel.addAll(tabInicial.getFilhos());
-			
-			//teste
+
+		List<int[]> posicoesFronteira = getExpandiveis(tabuleiro);
+		tabuleiro.setPosicoesFronteira(posicoesFronteira);
+		tabuleiro.setFilhos(criaFilhos(tabuleiro, posicoesFronteira));
+		if (tabuleiro.getNivel() == 2) {
+
+			listaTabuleirosQuintoNivel.addAll(tabuleiro.getFilhos());
+
 			for (Tabuleiro tab : listaTabuleirosQuintoNivel) {
-				tab.setValor(new Float(1));				
+				calculaUtilidade(tab);
 			}
-			listaTabuleirosQuintoNivel.get(listaTabuleirosQuintoNivel.size()-1).setValor(new Float(10));
-			
-			//calculaUtilidade(tab);
-			
+
 		} else {
-			for (Tabuleiro tab : tabInicial.getFilhos()) {
+			for (Tabuleiro tab : tabuleiro.getFilhos()) {
 				listaTabuleirosQuintoNivel.addAll(geraFilhosQuintoNivel(tab));
-				System.out.println(listaTabuleirosQuintoNivel.size());
-				System.out.println(tabInicial.getNivel());
 			}
 		}
 
@@ -221,51 +207,51 @@ public class TabuleiroGoMoku extends Canvas {
 	}
 
 	private void calculaUtilidade(Tabuleiro tab) {
-		int utilidade = 0;
+		float utilidade = 1f;
 		int[][] tabuleiro = tab.getTabuleiro();
-		
+
 		for (int i = 0; i < tabuleiro.length; i++) {
 			for (int j = 0; j < tabuleiro[0].length; j++) {
-				if (tabuleiro[i][j] != VAZIO) {
-					
-					//verificar duplas, triplas e quadruplas. 
-					//se as duplas, triplas ou quadruplas estiverem com as pontas fechadas, ignorar essa duplas, triplas ou quadruplas
-					//se as duas pontas estiverem abertas a nota tem que ser mais alta
-					//verificar em todas as dire��es. cuidar para nao repetir calculos.
-					//
-		
-					
-				}
+				float valor = calculaValorDaCasa(i, j);
+				if(valor != 0.0)
+					utilidade += valor;
+
 			}
 		}
-		
-		
-		
-		
-		
-		tab.setValor(new Float(1));
+
+		tab.setValor(utilidade);
 	}
 
-	private List<Tabuleiro> criaFilhos(Tabuleiro tabInicial,
+	private List<Tabuleiro> criaFilhos(Tabuleiro tabuleiro,
 			List<int[]> posicoesFronteira) {
 		List<Tabuleiro> filhos = new ArrayList<Tabuleiro>();
-		Tabuleiro aux = tabInicial;
-
+		int[][] aux = copiaTabuleiro(tabuleiro.getTabuleiro());
 		for (int[] fronteira : posicoesFronteira) {
-			if (tabInicial.getNivel() % 2 != 0) {
-				aux.getTabuleiro()[fronteira[0]][fronteira[1]] = XIS;
+			if (tabuleiro.getNivel() % 2 == 0) {
+				aux[fronteira[0]][fronteira[1]] = ZERO;
 			} else {
-				aux.getTabuleiro()[fronteira[0]][fronteira[1]] = ZERO;
+				aux[fronteira[0]][fronteira[1]] = XIS;
 			}
-			Tabuleiro tabuleiro = new Tabuleiro(aux.getTabuleiro());
-			tabuleiro.setNivel(tabInicial.getNivel() + 1);
-			tabuleiro.setPai(tabInicial);
-			tabuleiro.setJogadaOrigem(new int[] { fronteira[0], fronteira[1] });
-			filhos.add(tabuleiro);
+			Tabuleiro tabFilho = new Tabuleiro(aux);
+			tabFilho.setNivel(tabuleiro.getNivel() + 1);
+			tabFilho.setPai(tabuleiro);
+			tabFilho.setJogadaOrigem(new int[] { fronteira[0], fronteira[1] });
+			filhos.add(tabFilho);
+			aux = copiaTabuleiro(tabuleiro.getTabuleiro());
+
 
 		}
 
 		return filhos;
+	}
+
+	public int[][] copiaTabuleiro(int[][] estadoInicial) {
+		// this.tabuleiro = estadoInicial;
+		int[][] copiaTabuleiro = new int[estadoInicial.length][];
+		for (int i = 0; i < estadoInicial.length; i++) {
+			copiaTabuleiro[i] = Arrays.copyOf(estadoInicial[i], estadoInicial[i].length);
+		}
+		return copiaTabuleiro;
 	}
 
 	public List<int[]> getExpandiveis(Tabuleiro tab) {
@@ -302,23 +288,19 @@ public class TabuleiroGoMoku extends Canvas {
 		if (moveParaBaixo != null)
 			posicoesExpandiveis.add(moveParaBaixo);
 
-		int[] moveParaDiagDirCima = moveParaDiagDirCima(linha, coluna,
-				tabuleiro);
+		int[] moveParaDiagDirCima = moveParaDiagDirCima(linha, coluna, tabuleiro);
 		if (moveParaDiagDirCima != null)
 			posicoesExpandiveis.add(moveParaDiagDirCima);
 
-		int[] moveParaDiagDirBaixo = moveParaDiagDirBaixo(linha, coluna,
-				tabuleiro);
+		int[] moveParaDiagDirBaixo = moveParaDiagDirBaixo(linha, coluna, tabuleiro);
 		if (moveParaDiagDirBaixo != null)
 			posicoesExpandiveis.add(moveParaDiagDirBaixo);
 
-		int[] moveParaDiagEsqCima = moveParaDiagEsqCima(linha, coluna,
-				tabuleiro);
+		int[] moveParaDiagEsqCima = moveParaDiagEsqCima(linha, coluna, tabuleiro);
 		if (moveParaDiagEsqCima != null)
 			posicoesExpandiveis.add(moveParaDiagEsqCima);
 
-		int[] moveParaDiagEsqBaixo = moveParaDiagEsqBaixo(linha, coluna,
-				tabuleiro);
+		int[] moveParaDiagEsqBaixo = moveParaDiagEsqBaixo(linha, coluna, tabuleiro);
 		if (moveParaDiagEsqBaixo != null)
 			posicoesExpandiveis.add(moveParaDiagEsqBaixo);
 
@@ -435,7 +417,7 @@ public class TabuleiroGoMoku extends Canvas {
 	@Override
 	public boolean mouseDown(Event event, int x, int y) {
 		if (ganhador != VAZIO)
-			return false; // game is already over
+			return false;
 
 		int i = x / larguraCasa;
 		int j = y / alturaCasa;
@@ -456,60 +438,43 @@ public class TabuleiroGoMoku extends Canvas {
 		int largura = nColunas * larguraCasa;
 		int altura = nLinhas * alturaCasa;
 
-		// Draw grid
 		g.setColor(Color.blue);
 		for (int i = nColunas; i >= 0; i--)
-			g.drawLine(x0 + i * larguraCasa, y0, x0 + i * larguraCasa, y0
-					+ altura);
+			g.drawLine(x0 + i * larguraCasa, y0, x0 + i * larguraCasa, y0 + altura);
 		for (int j = nLinhas; j >= 0; j--)
-			g.drawLine(x0, y0 + j * alturaCasa, x0 + largura, y0 + j
-					* alturaCasa);
+			g.drawLine(x0, y0 + j * alturaCasa, x0 + largura, y0 + j * alturaCasa);
 
 		g.setColor(fgColor);
 		for (int i = nColunas - 1; i >= 0; i--)
 			for (int j = nLinhas - 1; j >= 0; j--)
 				switch (casas[i][j]) {
 				case VAZIO:
-					// int eval = evaluate( i,j );
-					// g.drawString( ""+eval, i*cellWidth + 1, j*cellHeight -9
-					// );
 					break;
 
 				case XIS:
-					g.drawLine(i * larguraCasa + 2 + x0, j * alturaCasa + 2
-							+ y0, (i + 1) * larguraCasa - 2 + x0, (j + 1)
-							* alturaCasa - 2 + y0);
-					g.drawLine((i + 1) * larguraCasa - 2 + x0, j * alturaCasa
-							+ 2 + y0, i * larguraCasa + 2 + x0, (j + 1)
-							* alturaCasa - 2 + y0);
+					g.drawLine(i * larguraCasa + 2 + x0, j * alturaCasa + 2 + y0, (i + 1) * larguraCasa - 2 + x0,
+							(j + 1) * alturaCasa - 2 + y0);
+					g.drawLine((i + 1) * larguraCasa - 2 + x0, j * alturaCasa + 2 + y0, i * larguraCasa + 2 + x0,
+							(j + 1) * alturaCasa - 2 + y0);
 					break;
 
 				case ZERO:
-					g.drawOval(i * larguraCasa + 2 + x0, j * alturaCasa + 2
-							+ y0, larguraCasa - 4, alturaCasa - 4);
+					g.drawOval(i * larguraCasa + 2 + x0, j * alturaCasa + 2 + y0, larguraCasa - 4, alturaCasa - 4);
 					break;
 
 				default:
-					// error!
-					g.fillRect(i * larguraCasa + 1 + x0, j * alturaCasa + 1
-							+ y0, larguraCasa - 1, alturaCasa - 1);
+					g.fillRect(i * larguraCasa + 1 + x0, j * alturaCasa + 1 + y0, larguraCasa - 1, alturaCasa - 1);
 				}
 
 		// desenha linha do ganhador
 		if (ganhador != VAZIO) {
 			g.setColor(Color.red);
-			g.drawLine(venceCol1 * larguraCasa + larguraCasa / 2, venceLinha1
-					* alturaCasa + alturaCasa / 2, venceCol2 * larguraCasa
-					+ larguraCasa / 2, venceLinha2 * alturaCasa + alturaCasa
-					/ 2);
-			g.drawLine(venceCol1 * larguraCasa + larguraCasa / 2 + 1,
-					venceLinha1 * alturaCasa + alturaCasa / 2, venceCol2
-							* larguraCasa + larguraCasa / 2 + 1, venceLinha2
-							* alturaCasa + alturaCasa / 2);
-			g.drawLine(venceCol1 * larguraCasa + larguraCasa / 2, venceLinha1
-					* alturaCasa + alturaCasa / 2 + 1, venceCol2 * larguraCasa
-					+ larguraCasa / 2, venceLinha2 * alturaCasa + alturaCasa
-					/ 2 + 1);
+			g.drawLine(venceCol1 * larguraCasa + larguraCasa / 2, venceLinha1 * alturaCasa + alturaCasa / 2, venceCol2
+					* larguraCasa + larguraCasa / 2, venceLinha2 * alturaCasa + alturaCasa / 2);
+			g.drawLine(venceCol1 * larguraCasa + larguraCasa / 2 + 1, venceLinha1 * alturaCasa + alturaCasa / 2,
+					venceCol2 * larguraCasa + larguraCasa / 2 + 1, venceLinha2 * alturaCasa + alturaCasa / 2);
+			g.drawLine(venceCol1 * larguraCasa + larguraCasa / 2, venceLinha1 * alturaCasa + alturaCasa / 2 + 1,
+					venceCol2 * larguraCasa + larguraCasa / 2, venceLinha2 * alturaCasa + alturaCasa / 2 + 1);
 
 		}
 	}
@@ -523,8 +488,7 @@ public class TabuleiroGoMoku extends Canvas {
 		if (verificaVencedor(col, row)) {
 			repaint();
 		} else {
-			repaint(col * larguraCasa + 1, row * alturaCasa + 1,
-					larguraCasa - 1, alturaCasa - 1);
+			repaint(col * larguraCasa + 1, row * alturaCasa + 1, larguraCasa - 1, alturaCasa - 1);
 		}
 	}
 
@@ -533,11 +497,11 @@ public class TabuleiroGoMoku extends Canvas {
 	int dy[] = { -1, -1, 0, 1 };
 
 	/**
-	 * Obtém os valores da casa para uma linha de dez peças - cinco de cada
-	 * lado da casa em determinada linha e coluna, orientado em uma determinada
-	 * direção. Existem quatro possíveis direções: horizontal, vertical, e
-	 * duas diagonais. para distinguir entre diagonais, vamos chamar direções
-	 * S, SE, E, e SW (Pense em um azimute).
+	 * Obtém os valores da casa para uma linha de dez peças - cinco de cada lado
+	 * da casa em determinada linha e coluna, orientado em uma determinada
+	 * direção. Existem quatro possíveis direções: horizontal, vertical, e duas
+	 * diagonais. para distinguir entre diagonais, vamos chamar direções S, SE,
+	 * E, e SW (Pense em um azimute).
 	 * 
 	 */
 	int[] buscaLinha(int col, int row, int direction) {
@@ -551,9 +515,11 @@ public class TabuleiroGoMoku extends Canvas {
 			i += dx[direction];
 			j += dy[direction];
 
-			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // esta na borda?
-																	
+			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas){
+				// esta na
+				// borda?
 				line[k] = casas[i][j];
+			}
 			else
 				line[k] = BORDA;
 		}
@@ -567,7 +533,6 @@ public class TabuleiroGoMoku extends Canvas {
 			j -= dy[direction];
 
 			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // esta na borda?
-																	
 				line[k] = casas[i][j];
 			else
 				line[k] = BORDA;
@@ -624,10 +589,8 @@ public class TabuleiroGoMoku extends Canvas {
 			if (ultimo - primeiro < dg) // linha nao tem buracos
 				eval++;
 
-			if (linha[i - 1] != pecadDoAdversario
-					&& // nao bloqueado
-					linha[i + 4] != pecadDoAdversario && linha[i - 1] != BORDA
-					&& linha[i + 4] != BORDA)
+			if (linha[i - 1] != pecadDoAdversario && // nao bloqueado
+					linha[i + 4] != pecadDoAdversario && linha[i - 1] != BORDA && linha[i + 4] != BORDA)
 				eval++;
 
 			if (eval > melhor)
@@ -652,8 +615,7 @@ public class TabuleiroGoMoku extends Canvas {
 	int calculaValorDaCasa(int col, int lin) {
 		for (int dir = 0; dir < 4; dir++) {
 			int[] linha = buscaLinha(col, lin, dir);
-			int meuPeso = getValorLinha(linha, pecadDoAdversario == ZERO ? XIS
-					: ZERO) + 2;
+			int meuPeso = getValorLinha(linha, pecadDoAdversario == ZERO ? XIS : ZERO) + 2;
 			int seuPeso = getValorLinha(linha, pecadDoAdversario);
 			pesos[dir] = Math.max(meuPeso, seuPeso) - 2;
 		}
@@ -718,9 +680,8 @@ public class TabuleiroGoMoku extends Canvas {
 	 * Recupera cadeia do placar
 	 */
 	String getScore() {
-		return "Placar: Voce (" + (pecadDoAdversario == XIS ? 'X' : 'O')
-				+ "): " + (pecadDoAdversario == XIS ? pontosX : pontosZero)
-				+ ", Computer (" + (pecadDoAdversario != XIS ? 'X' : 'O')
-				+ "): " + (pecadDoAdversario != XIS ? pontosX : pontosZero);
+		return "Placar: Voce (" + (pecadDoAdversario == XIS ? 'X' : 'O') + "): "
+				+ (pecadDoAdversario == XIS ? pontosX : pontosZero) + ", Computer ("
+				+ (pecadDoAdversario != XIS ? 'X' : 'O') + "): " + (pecadDoAdversario != XIS ? pontosX : pontosZero);
 	}
 };

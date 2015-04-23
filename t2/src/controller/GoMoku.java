@@ -19,7 +19,7 @@ public class GoMoku extends Applet {
 
 		/* Cria os componentes e adiciona na applets. */
 
-		TabuleiroGoMoku board = new TabuleiroGoMoku(5, 5, 12, 12);
+		TabuleiroGoMoku board = new TabuleiroGoMoku(15, 15, 12, 12);
 		add(board);
 
 
