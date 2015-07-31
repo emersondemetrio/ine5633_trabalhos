@@ -6,7 +6,6 @@ import java.applet.Applet;
 import java.awt.Color;
 
 import model.TabuleiroGoMoku;
-import model.Utilidade;
 
 public class GoMoku extends Applet {
 
@@ -24,7 +23,7 @@ public class GoMoku extends Applet {
 
 
 		board.setBounds(5, 5, 900, 900); 
-new Utilidade();
+
 	}
 
 } 

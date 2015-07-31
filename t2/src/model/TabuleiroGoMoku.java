@@ -48,12 +48,9 @@ public class TabuleiroGoMoku extends Canvas {
 	Color fgColor;
 	Dimension dimensaoMinima;
 
-
-
-	//geracao de filhos limitada 
-	//subtracao do calculo do adversario
-	//resumir o relatorio
-
+	// geracao de filhos limitada
+	// subtracao do calculo do adversario
+	// resumir o relatorio
 
 	// Local atual do cursor
 	int colunaAtual;
@@ -132,20 +129,22 @@ public class TabuleiroGoMoku extends Canvas {
 			melhorColuna = temp[0];
 			melhorLinha = temp[1];
 
-
-			//			for (int i = nColunas - 1; i >= 0; i--) 
-			//				for (int j = nLinhas - 1; j >= 0; j--) 
-			//					if (casas[i][j] == VAZIO) { 
-			//						int avaliacao = calculaValorDaCasa(i, j); 
-			//						if (avaliacao > melhorNota){ 
-			//							melhorNota = avaliacao; melhorColuna = i; melhorLinha = j; 
-			//						} 
-			//					}
+			// for (int i = nColunas - 1; i >= 0; i--)
+			// for (int j = nLinhas - 1; j >= 0; j--)
+			// if (casas[i][j] == VAZIO) {
+			// int avaliacao = calculaValorDaCasa(i, j);
+			// if (avaliacao > melhorNota){
+			// melhorNota = avaliacao; melhorColuna = i; melhorLinha = j;
+			// }
+			// }
 
 		}
 
 		setaCasa(melhorColuna, melhorLinha, ZERO);
 	}
+
+
+
 
 	private int[] melhorJogada(int[][] casas, int numVez) {
 		int nivel = numVez;
@@ -153,7 +152,7 @@ public class TabuleiroGoMoku extends Canvas {
 		Tabuleiro tabInicial = new Tabuleiro(casas);
 
 		// retorna o melhor tabuleiro
-		Tabuleiro melhorTabuleirosNivel5 = buscaMelhorTabuleiro(tabInicial, nivel);
+		Tabuleiro melhorTabuleirosNivel5 = minimax(tabInicial);
 
 		// recupera jogada feita para chegar ao melhor tabuleiro
 		Tabuleiro aux = melhorTabuleirosNivel5;
@@ -168,42 +167,64 @@ public class TabuleiroGoMoku extends Canvas {
 
 	}
 
-	private Tabuleiro buscaMelhorTabuleiro(Tabuleiro tabInicial, int nivel) {
-		List<Tabuleiro> listaTabuleirosQuintoNivel = new ArrayList<Tabuleiro>();
-		listaTabuleirosQuintoNivel = geraFilhosQuintoNivel(tabInicial);
+	private Tabuleiro minimax(Tabuleiro tabInicial) {
 
-		Tabuleiro aux = tabInicial;
-		for (Tabuleiro tabuleiro : listaTabuleirosQuintoNivel) {
-			if (tabuleiro.getValor() > aux.getValor()) {
-				aux = tabuleiro;
+		List<int[]> posicoesFronteira = getExpandiveis(tabInicial);
+
+		// minimax(player,board)
+		// if(game over in current board position)
+		// return winner
+		// children = all legal moves for player from this board
+
+		tabInicial.setPosicoesFronteira(posicoesFronteira);
+		tabInicial.setFilhos(criaFilhos(tabInicial, posicoesFronteira));
+
+		for (Tabuleiro tab : tabInicial.getFilhos()) {
+			if(tabInicial.getNivel() < 4){
+				Tabuleiro teste = minimax(tab);
+			} else {
+				tabInicial.setValor(getMinMax(tabInicial));
 			}
+
 		}
 
-		return aux;
+		return null;
 	}
 
-	// metodo recursivo
-	private List<Tabuleiro> geraFilhosQuintoNivel(Tabuleiro tabuleiro) {
-		List<Tabuleiro> listaTabuleirosQuintoNivel = new ArrayList<Tabuleiro>();
-
-		List<int[]> posicoesFronteira = getExpandiveis(tabuleiro);
-		tabuleiro.setPosicoesFronteira(posicoesFronteira);
-		tabuleiro.setFilhos(criaFilhos(tabuleiro, posicoesFronteira));
-		if (tabuleiro.getNivel() == 2) {
-
-			listaTabuleirosQuintoNivel.addAll(tabuleiro.getFilhos());
-
-			for (Tabuleiro tab : listaTabuleirosQuintoNivel) {
-				calculaUtilidade(tab);
+	private float getMinMax(Tabuleiro teste) {
+		if (teste.getNivel() % 2 != 0) { // max
+			// return maximal score of calling minimax on all the
+			// children
+			Tabuleiro testeMaior = teste.getFilhos().get(1);
+			for (Tabuleiro t : teste.getFilhos()) {
+				calculaUtilidade(t);
+				if (t.getValor() > testeMaior.getValor())
+					testeMaior = t;
+			}
+			return testeMaior.getValor();
+		} else { // min
+			// return minimal score of calling minimax on all
+			// the children
+			Tabuleiro testeMenor = teste.getFilhos().get(1);
+			for (Tabuleiro t : teste.getFilhos()) {
+				calculaUtilidade(t);
+				t.setValor(t.getValor() * -1);
+				if (t.getValor() < testeMenor.getValor())
+					testeMenor = t;
 			}
 
-		} else {
-			for (Tabuleiro tab : tabuleiro.getFilhos()) {
-				listaTabuleirosQuintoNivel.addAll(geraFilhosQuintoNivel(tab));
-			}
+			return testeMenor.getValor();
 		}
+	}
 
-		return listaTabuleirosQuintoNivel;
+	// correcao para retornar os filhos gerados apenas a partir da jogada
+	// anterior
+	private List<int[]> getExpandiveisDosFilhos(Tabuleiro tabuleiro) {
+		ArrayList<int[]> posicoesExpandiveis = new ArrayList<int[]>();
+		int[] jogadaOrigem = tabuleiro.getJogadaOrigem();
+		posicoesExpandiveis.addAll(ehExpansivel(jogadaOrigem[0], jogadaOrigem[1], tabuleiro.getTabuleiro()));
+
+		return posicoesExpandiveis;
 	}
 
 	private void calculaUtilidade(Tabuleiro tab) {
@@ -213,7 +234,7 @@ public class TabuleiroGoMoku extends Canvas {
 		for (int i = 0; i < tabuleiro.length; i++) {
 			for (int j = 0; j < tabuleiro[0].length; j++) {
 				float valor = calculaValorDaCasa(i, j);
-				if(valor != 0.0)
+				if (valor != 0.0)
 					utilidade += valor;
 
 			}
@@ -222,8 +243,7 @@ public class TabuleiroGoMoku extends Canvas {
 		tab.setValor(utilidade);
 	}
 
-	private List<Tabuleiro> criaFilhos(Tabuleiro tabuleiro,
-			List<int[]> posicoesFronteira) {
+	private List<Tabuleiro> criaFilhos(Tabuleiro tabuleiro, List<int[]> posicoesFronteira) {
 		List<Tabuleiro> filhos = new ArrayList<Tabuleiro>();
 		int[][] aux = copiaTabuleiro(tabuleiro.getTabuleiro());
 		for (int[] fronteira : posicoesFronteira) {
@@ -238,7 +258,6 @@ public class TabuleiroGoMoku extends Canvas {
 			tabFilho.setJogadaOrigem(new int[] { fronteira[0], fronteira[1] });
 			filhos.add(tabFilho);
 			aux = copiaTabuleiro(tabuleiro.getTabuleiro());
-
 
 		}
 
@@ -255,15 +274,23 @@ public class TabuleiroGoMoku extends Canvas {
 	}
 
 	public List<int[]> getExpandiveis(Tabuleiro tab) {
-		int[][] tabuleiro = tab.getTabuleiro();
 		ArrayList<int[]> posicoesExpandiveis = new ArrayList<int[]>();
 
-		for (int i = 0; i < tabuleiro.length; i++) {
-			for (int j = 0; j < tabuleiro[0].length; j++) {
-				if (tabuleiro[i][j] != VAZIO) {
-					posicoesExpandiveis.addAll(ehExpansivel(i, j, tabuleiro));
+		if (tab.getNivel() == 0) {
+
+			int[][] tabuleiro = tab.getTabuleiro();
+
+			for (int i = 0; i < tabuleiro.length; i++) {
+				for (int j = 0; j < tabuleiro[0].length; j++) {
+					if (tabuleiro[i][j] != VAZIO) {
+						posicoesExpandiveis.addAll(ehExpansivel(i, j, tabuleiro));
+					}
 				}
 			}
+
+		} else {
+			int[] jogadaOrigem = tab.getJogadaOrigem();
+			posicoesExpandiveis.addAll(ehExpansivel(jogadaOrigem[0], jogadaOrigem[1], tab.getTabuleiro()));
 		}
 
 		return posicoesExpandiveis;
@@ -515,12 +542,11 @@ public class TabuleiroGoMoku extends Canvas {
 			i += dx[direction];
 			j += dy[direction];
 
-			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas){
+			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) {
 				// esta na
 				// borda?
 				line[k] = casas[i][j];
-			}
-			else
+			} else
 				line[k] = BORDA;
 		}
 
@@ -532,7 +558,8 @@ public class TabuleiroGoMoku extends Canvas {
 			i -= dx[direction];
 			j -= dy[direction];
 
-			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // esta na borda?
+			if (i >= 0 && j >= 0 && i < nColunas && j < nLinhas) // esta na
+				// borda?
 				line[k] = casas[i][j];
 			else
 				line[k] = BORDA;
